@@ -116,10 +116,11 @@ class HitoriSolver
     end
 
     class Process
-        attr_reader :moves
+        attr_reader :moves, :performed_moves
         def initialize(board)
             @board = board
             @moves = Array.new
+            @performed_moves = Array.new
         end
 
         def get_move(dir, row, column, color, reason)
@@ -275,11 +276,11 @@ class HitoriSolver
 
         def _apply_move(move)
             if (move.color == "black") then
-                return _apply_black_move(move)
+                _apply_black_move(move)
             else
-                return _apply_white_move(move)
+                _apply_white_move(move)
             end
+            @performed_moves << move
         end
-
     end
 end
