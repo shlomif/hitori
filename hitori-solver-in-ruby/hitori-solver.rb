@@ -3,6 +3,12 @@ class HitoriSolver
     end
     class WrongHeightException < RuntimeError
     end
+    class UnsolvableException < RuntimeError
+    end
+    class FourInARowException < UnsolvableException
+    end
+    class TwoPairsException < UnsolvableException
+    end
 
     class Cell
         $UNKNOWN = 0
@@ -24,9 +30,10 @@ class HitoriSolver
         def mark_as_black()
             @state = $BLACK
         end
-
-
     end
+
+    $DIR_X = 0
+    $DIR_Y = 1
 
     class Board
         attr_reader :x_len
@@ -75,30 +82,93 @@ class HitoriSolver
 
     end
 
+    class Move
+        attr_reader :y, :x, :color, :reason
+        def initialize(y,x,color, reason)
+            @y = y
+            @x = x
+            @color = color
+            @reason = reason
+        end
+    end
+
     class Process
         def initialize(board)
             @board = board
+            @moves = Array.new
+        end
+
+        def get_move(dir, row, column, color, reason)
+            coords = (dir == $DIR_X) ? [row, column] : [column, row]
+            coords.push(color, reason)
+            return Move.new(*coords)
         end
 
         def solve()
+            counter = Hash.new()
+            counter[$DIR_X] = (0 .. @board.maxx).map { |x| Hash.new }
+            counter[$DIR_Y] = (0 .. @board.maxy).map { |y| Hash.new }
             for x in (0 .. @board.maxx) do
-                triads = Hash.new();
                 for y in (0 .. @board.maxy) do
+                    yx = [y,x]
+                    val = @board.cell(0, yx).value
 
-                    val = @board.cell_yx(y,x).value
-
-                    triads[val] ||= \
-                        { 'p' => [], 'is_pair' => false}
-
-                    if (triads[val]['p'][-1] == y-1) then
-                        triads[val]['is_pair'] = true;
+                    for dir in [ $DIR_X, $DIR_Y ] do
+                        coords = (dir == $DIR_X) ? yx : yx.reverse
+                        row = coords[0]
+                        col = coords[1]
+                        myseqs = counter[dir][row][val] ||= []
+                            
+                        if (myseqs.length == 0) then
+                            myseqs <<= [col]
+                        elsif (myseqs[-1][-1]+1 == col) then
+                            myseqs[-1] << col
+                        else
+                            myseqs << [col]
+                        end
                     end
+                end
+            end
 
-                    triads[val]['p'] << y
-
-                    if ((triads[val]['p'].length() >= 3) &&
-                         triads[val]['is_pair']) then
-
+            for dir in [ $DIR_X, $DIR_Y ] do
+                counter[dir].each_index do |row_idx| 
+                    row = counter[dir][row_idx]
+                    row.each do |val, seqs|
+                        sorted_seqs = \
+                            seqs.sort { |a,b| -(a.length() <=> b.length()) }
+                        if (sorted_seqs[0].length() >= 4) then
+                            raise FourInARowException, \
+                                "Found four in a row in #{dir} #{row}"
+                        elsif (sorted_seqs[0].length() == 3) then
+                            if (sorted_seqs[1].length() >= 2) then
+                                raise TwoPairsException, \
+                                    "Found two pairs in #{dir} #{row}"
+                            else
+                                @moves.push(
+                                    self.get_move(
+                                        dir, row_idx, sorted_seqs[0][1],
+                                        "white",
+                                        "Three in a row"
+                                    )
+                                )
+                            end
+                        elsif (sorted_seqs[0].length() == 2) then
+                            if (sorted_seqs.length > 1) then
+                                if (sorted_seqs[1].length() == 2) then
+                                    raise TwoPairsException, \
+                                    "Found two pairs in #{dir} #{row}"
+                                end
+                                sorted_seqs[1..-1].each do |seq|
+                                    @moves.push(
+                                        self.get_move(
+                                            dir, row, seq[0],
+                                            "black",
+                                            "An adjacent pair and some standalones mark the standalones as black"
+                                        )
+                                    )
+                                end
+                            end
+                        end
                     end
                 end
             end
