@@ -81,7 +81,23 @@ describe "construct_board" do
 
         # (y,x) = 2,2 ; color = white
         process.apply_a_single_move()
+        process.moves.length().should == 3
 
         board.cell_yx(2,2).state.should == HitoriSolver::Cell::WHITE
+
+        # (y,x) = 3,1 ; color = white
+        process.apply_a_single_move()
+        process.moves.length().should == 3
+
+        board.cell_yx(3,1).state.should == HitoriSolver::Cell::WHITE
+        process.moves[0].y.should == 3
+        process.moves[0].x.should == 3
+        process.moves[0].color.should == "white"
+        process.moves[1].y.should == 4
+        process.moves[1].x.should == 2
+        process.moves[1].color.should == "white"
+        process.moves[2].y.should == 2
+        process.moves[2].x.should == 1
+        process.moves[2].color.should == "black"
     end
 end

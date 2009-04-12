@@ -80,6 +80,15 @@ class HitoriSolver
             end
         end
 
+        def row_max(dir)
+            if (dir == DIR_X) then
+                return maxx()
+            else
+                return maxy()
+            end
+        end
+
+
         def in_bounds(y,x)
             return (   (0 <= y) && (y < @y_len) \
                     && (0 <= x) && (x < @x_len)
@@ -243,6 +252,25 @@ class HitoriSolver
         def _apply_white_move(move)
             yx = [move.y, move.x]
             @board.cell_yx(*yx).mark_as_white()
+            val = @board.cell_yx(*yx).value
+            # Look for identical values in the same x/y
+            # and mark them as black.
+            for dir in [ DIR_X, DIR_Y ] do
+                row = yx[dir]
+                for col in (0 .. @board.row_max(dir)) do
+                    if col != yx[1-dir] then
+                        if (@board.cell(dir, [row,col]).value == val)
+                            add_move(
+                                dir, row, col,
+                                "black",
+                                ("A square in the same row/column as a " + 
+                                "white square and with an identical value " +
+                                "becomes black")
+                            )
+                        end
+                    end
+                end
+            end
         end
 
         def _apply_move(move)
