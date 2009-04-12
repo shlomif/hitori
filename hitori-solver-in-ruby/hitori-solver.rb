@@ -39,7 +39,8 @@ class HitoriSolver
                     d_row << Cell.new(v)
                 end
                 if (d_row.length() != @x_len)
-                    raise WrongRowLenException, "Wrong number of values in row #{board.length()}."
+                    raise WrongRowLenException, \
+                        "Wrong number of values in row #{board.length()}."
                 end
                 board << d_row
             end
