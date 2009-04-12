@@ -106,7 +106,7 @@ class HitoriSolver
         end
 
         class Counter < Hash
-            def set_val(dir, yx, val)
+            def set_dir_val(dir, yx, val)
                 coords = (dir == $DIR_X) ? yx : yx.reverse
                 row = coords[0]
                 col = coords[1]
@@ -118,6 +118,12 @@ class HitoriSolver
                     myseqs[-1] << col
                 else
                     myseqs << [col]
+                end
+            end
+
+            def set_val(yx, val)
+                for dir in [ $DIR_X, $DIR_Y ] do
+                    set_dir_val(dir, yx, val)
                 end
             end
         end
@@ -132,9 +138,7 @@ class HitoriSolver
                     yx = [y,x]
                     val = @board.cell(0, yx).value
 
-                    for dir in [ $DIR_X, $DIR_Y ] do
-                        counter.set_val(dir, yx, val)
-                    end
+                    counter.set_val(yx, val)
                 end
             end
             return counter
