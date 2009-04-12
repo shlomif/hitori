@@ -150,12 +150,14 @@ sub OnInit
 
     my $frame = Wx::Frame->new( undef, -1, 'wxPerl', wxDefaultPosition, [ 200, 100 ] );
 
-    my $sizer = Wx::BoxSizer->new(wxHORIZONTAL());
+    my $sizer1 = Wx::BoxSizer->new(wxVERTICAL());
+    my $sizer2 = Wx::BoxSizer->new(wxHORIZONTAL());
 
-    $frame->SetSizer($sizer);
+    $frame->SetSizer($sizer1);
+    $sizer1->Add($sizer2, 1, wxALL(), 10);
 
     $frame->{board} = HitoriCanvas->new($frame);
-    $sizer->Add($frame->{board}, 1, wxALL(), 10);
+    $sizer2->Add($frame->{board}, 1, wxALL(), 10);
     $frame->{list} = Wx::ListBox->new(
         $frame,
         -1,
@@ -166,9 +168,9 @@ sub OnInit
             apply_a_single_move
         )]
     );
-    $sizer->Add($frame->{list}, 1, wxALL(), 10);
+    $sizer2->Add($frame->{list}, 1, wxALL(), 10);
 
-    $frame->{performed_moves_list} = Wx::ListBox->new(
+    my $performed_moves_list = Wx::ListBox->new(
         $frame,
         -1,
         wxDefaultPosition(),
@@ -176,7 +178,11 @@ sub OnInit
         []
     );
 
-    $sizer->Add($frame->{performed_moves_list}, 1, wxALL(), 10);
+    $frame->{performed_moves_list} = $performed_moves_list;
+
+    $sizer1->Add($performed_moves_list, 0, wxALL()|wxEXPAND(), 20);
+
+    $performed_moves_list->SetMinSize(Wx::Size->new(500,200));
 
     $frame->SetSize(Wx::Size->new(600,400));
     $frame->Show( 1 );
