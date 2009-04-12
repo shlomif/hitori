@@ -54,8 +54,23 @@ describe "construct_board" do
         process = HitoriSolver::Process.new(board)
         process.analyze_sequences()
         process.moves.length().should == 1
-        process.moves[0].x.should == 2
         process.moves[0].y.should == 3
+        process.moves[0].x.should == 2
         process.moves[0].color.should == "black"
+        process.apply_a_single_move()
+        board.cell_yx(3,2).state.should == HitoriSolver::Cell::BLACK
+        process.moves.length().should == 4
+        process.moves[0].y.should == 2
+        process.moves[0].x.should == 2
+        process.moves[0].color.should == "white"
+        process.moves[1].y.should == 3
+        process.moves[1].x.should == 1
+        process.moves[1].color.should == "white"
+        process.moves[2].y.should == 3
+        process.moves[2].x.should == 3
+        process.moves[2].color.should == "white"
+        process.moves[3].y.should == 4
+        process.moves[3].x.should == 2
+        process.moves[3].color.should == "white"
     end
 end

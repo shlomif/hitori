@@ -9,31 +9,36 @@ class HitoriSolver
     end
     class TwoPairsException < UnsolvableException
     end
+    class CellShouldBeDifferentColor < UnsolvableException
+    end
 
     class Cell
-        $UNKNOWN = 0
-        $WHITE = 1
-        $BLACK = 2
+        UNKNOWN = 0
+        WHITE = 1
+        BLACK = 2
 
         attr_reader :state
         attr_reader :value
 
         def initialize(val)
-            @state = $UNKNOWN
+            @state = UNKNOWN
             @value = val
         end
 
         def mark_as_white()
-            @state = $WHITE
+            @state = WHITE
         end
 
         def mark_as_black()
-            @state = $BLACK
+            if (@state == WHITE)
+                raise CellShouldBeDifferentColor
+            end
+            @state = BLACK
         end
     end
 
-    $DIR_X = 0
-    $DIR_Y = 1
+    DIR_X = 0
+    DIR_Y = 1
 
     class Board
         attr_reader :x_len
@@ -72,6 +77,12 @@ class HitoriSolver
             end
         end
 
+        def in_bounds(y,x)
+            return (   (0 <= y) && (y < @y_len) \
+                    && (0 <= x) && (x < @x_len)
+                   )
+        end
+
         def maxx()
             return @x_len-1
         end
@@ -100,7 +111,7 @@ class HitoriSolver
         end
 
         def get_move(dir, row, column, color, reason)
-            coords = (dir == $DIR_X) ? [row, column] : [column, row]
+            coords = (dir == DIR_X) ? [row, column] : [column, row]
             coords.push(color, reason)
             return Move.new(*coords)
         end
@@ -112,7 +123,7 @@ class HitoriSolver
 
         class Counter < Hash
             def set_dir_val(dir, yx, val)
-                coords = (dir == $DIR_X) ? yx : yx.reverse
+                coords = (dir == DIR_X) ? yx : yx.reverse
                 row = coords[0]
                 col = coords[1]
                 myseqs = self[dir][row][val] ||= []
@@ -127,7 +138,7 @@ class HitoriSolver
             end
 
             def set_val(yx, val)
-                for dir in [ $DIR_X, $DIR_Y ] do
+                for dir in [ DIR_X, DIR_Y ] do
                     set_dir_val(dir, yx, val)
                 end
             end
@@ -135,8 +146,8 @@ class HitoriSolver
 
         def calc_sequences_counter()
             counter = Counter.new()
-            counter[$DIR_X] = (0 .. @board.maxx).map { |x| Hash.new }
-            counter[$DIR_Y] = (0 .. @board.maxy).map { |y| Hash.new }
+            counter[DIR_X] = (0 .. @board.maxx).map { |x| Hash.new }
+            counter[DIR_Y] = (0 .. @board.maxy).map { |y| Hash.new }
             for x in (0 .. @board.maxx) do
                 for y in (0 .. @board.maxy) do
                     yx = [y,x]
@@ -192,7 +203,7 @@ class HitoriSolver
         def analyze_sequences()
             counter = self.calc_sequences_counter()
 
-            for dir in [ $DIR_X, $DIR_Y ] do
+            for dir in [ DIR_X, DIR_Y ] do
                 counter[dir].each_index do |row_idx| 
                     row = counter[dir][row_idx]
                     row.each do |val, seqs|
@@ -201,5 +212,31 @@ class HitoriSolver
                 end
             end
         end
+
+        def apply_a_single_move()
+            if (@moves.length() > 0) then
+                move = @moves.shift()
+                _apply_move(move)
+            end
+        end
+
+        Offsets = [[-1,0],[0,-1],[0,1],[1,0]]
+        def _apply_move(move)
+            if (move.color == "black") then
+                yx = [move.y, move.x]
+                @board.cell_yx(*yx).mark_as_black()
+                for offset_yx in Offsets do
+                    new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
+                    if @board.in_bounds(*new_yx) then
+                        add_move(
+                            DIR_X, new_yx[0], new_yx[1],
+                            "white",
+                            "Neighboring cells to a black one should be white"
+                        )
+                    end
+                end
+            end
+        end
+
     end
 end
