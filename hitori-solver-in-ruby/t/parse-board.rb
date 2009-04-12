@@ -40,5 +40,22 @@ describe "construct_board" do
             board = HitoriSolver::Board.new(2, 4, [[3,2,1,4],[4,5,6,7], [1,1,2,1]])   
         }.should raise_error(HitoriSolver::WrongHeightException)
     end
-    
+
+    it "should mark 2,0 as black in Board No. 1" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        contents = [
+            [2,1,3,2,4],
+            [4,5,3,2,2],
+            [3,4,2,5,1],
+            [1,4,3,3,2],
+            [2,5,1,4,3]
+        ]
+        board = HitoriSolver::Board.new(5, 5, contents)
+        process = HitoriSolver::Process.new(board)
+        process.analyze_sequences()
+        process.moves.length().should == 1
+        process.moves[0].x.should == 2
+        process.moves[0].y.should == 3
+        process.moves[0].color.should == "black"
+    end
 end

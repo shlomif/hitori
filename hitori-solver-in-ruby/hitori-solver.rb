@@ -93,6 +93,7 @@ class HitoriSolver
     end
 
     class Process
+        attr_reader :moves
         def initialize(board)
             @board = board
             @moves = Array.new
@@ -104,7 +105,7 @@ class HitoriSolver
             return Move.new(*coords)
         end
 
-        def solve()
+        def analyze_sequences()
             counter = Hash.new()
             counter[$DIR_X] = (0 .. @board.maxx).map { |x| Hash.new }
             counter[$DIR_Y] = (0 .. @board.maxy).map { |y| Hash.new }
@@ -161,7 +162,7 @@ class HitoriSolver
                                 sorted_seqs[1..-1].each do |seq|
                                     @moves.push(
                                         self.get_move(
-                                            dir, row, seq[0],
+                                            dir, row_idx, seq[0],
                                             "black",
                                             "An adjacent pair and some standalones mark the standalones as black"
                                         )
