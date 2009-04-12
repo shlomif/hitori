@@ -23,5 +23,6 @@ describe "construct_board" do
         board.cell_yx(0,0).value.should == 2
         board.cell_yx(0,1).value.should == 1
         board.cell_yx(0,2).value.should == 3
+        board.cell_yx(4,2).value.should == 1
     end
 end
