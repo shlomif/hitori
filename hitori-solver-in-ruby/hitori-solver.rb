@@ -148,6 +148,47 @@ class HitoriSolver
             return counter
         end
 
+        def analyze_seqs_row(dir, row_idx, row, val, seqs)
+
+            sorted_seqs = seqs.sort { |a,b| -(a.length() <=> b.length()) }
+
+            if (sorted_seqs[0].length() >= 4) then
+
+                raise FourInARowException, \
+                    "Found four in a row in #{dir} #{row}"
+
+            elsif (sorted_seqs[0].length() == 3) then
+
+                if (sorted_seqs[1].length() >= 2) then
+                    raise TwoPairsException, \
+                        "Found two pairs in #{dir} #{row}"
+                else
+                    add_move(
+                        dir, row_idx, sorted_seqs[0][1],
+                        "white",
+                        "Three in a row"
+                    )
+                end
+
+            elsif (sorted_seqs[0].length() == 2) then
+
+                if (sorted_seqs.length > 1) then
+                    if (sorted_seqs[1].length() == 2) then
+                        raise TwoPairsException, \
+                        "Found two pairs in #{dir} #{row}"
+                    end
+                    sorted_seqs[1..-1].each do |seq|
+                        add_move(
+                            dir, row_idx, seq[0],
+                            "black",
+                            "An adjacent pair and some standalones mark the standalones as black"
+                        )
+                    end
+                end
+
+            end
+        end
+
         def analyze_sequences()
             counter = self.calc_sequences_counter()
 
@@ -155,37 +196,7 @@ class HitoriSolver
                 counter[dir].each_index do |row_idx| 
                     row = counter[dir][row_idx]
                     row.each do |val, seqs|
-                        sorted_seqs = \
-                            seqs.sort { |a,b| -(a.length() <=> b.length()) }
-                        if (sorted_seqs[0].length() >= 4) then
-                            raise FourInARowException, \
-                                "Found four in a row in #{dir} #{row}"
-                        elsif (sorted_seqs[0].length() == 3) then
-                            if (sorted_seqs[1].length() >= 2) then
-                                raise TwoPairsException, \
-                                    "Found two pairs in #{dir} #{row}"
-                            else
-                                add_move(
-                                    dir, row_idx, sorted_seqs[0][1],
-                                    "white",
-                                    "Three in a row"
-                                )
-                            end
-                        elsif (sorted_seqs[0].length() == 2) then
-                            if (sorted_seqs.length > 1) then
-                                if (sorted_seqs[1].length() == 2) then
-                                    raise TwoPairsException, \
-                                    "Found two pairs in #{dir} #{row}"
-                                end
-                                sorted_seqs[1..-1].each do |seq|
-                                    add_move(
-                                        dir, row_idx, seq[0],
-                                        "black",
-                                        "An adjacent pair and some standalones mark the standalones as black"
-                                    )
-                                end
-                            end
-                        end
+                        analyze_seqs_row(dir, row_idx, row, val, seqs)
                     end
                 end
             end
