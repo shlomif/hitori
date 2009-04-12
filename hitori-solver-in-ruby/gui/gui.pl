@@ -33,6 +33,8 @@ sub assign_board_and_process
 
     $self->{board} = $board;
     $self->{process} = $process;
+
+    return;
 }
 
 sub new
