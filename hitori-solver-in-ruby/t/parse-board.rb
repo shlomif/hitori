@@ -25,4 +25,10 @@ describe "construct_board" do
         board.cell_yx(0,2).value.should == 3
         board.cell_yx(4,2).value.should == 1
     end
+    it "should throw an exception for invalid x_len" do
+        board = 0
+        lambda {
+            board = HitoriSolver::Board.new(2, 4, [[3,2,1],[4,5,6,7]])   
+        }.should raise_error(HitoriSolver::WrongRowLenException)
+    end
 end

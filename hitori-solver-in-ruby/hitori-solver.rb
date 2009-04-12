@@ -1,4 +1,6 @@
 class HitoriSolver
+    class WrongRowLenException < RuntimeError
+    end
 
     class Cell
         $UNKNOWN = 0
@@ -35,7 +37,7 @@ class HitoriSolver
                     d_row << Cell.new(v)
                 end
                 if (d_row.length() != @x_len)
-                    raise "d_row in pos #{board.length()} has the wrong length"
+                    raise WrongRowLenException, "Wrong number of values in row #{board.length()}."
                 end
                 board << d_row
             end
