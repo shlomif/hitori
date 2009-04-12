@@ -105,23 +105,26 @@ class HitoriSolver
             return Move.new(*coords)
         end
 
-        def fill_seqs_counter(counter, dir, yx, val)
-            coords = (dir == $DIR_X) ? yx : yx.reverse
-            row = coords[0]
-            col = coords[1]
-            myseqs = counter[dir][row][val] ||= []
-                
-            if (myseqs.length == 0) then
-                myseqs <<= [col]
-            elsif (myseqs[-1][-1]+1 == col) then
-                myseqs[-1] << col
-            else
-                myseqs << [col]
+        class Counter < Hash
+            def set_val(dir, yx, val)
+                coords = (dir == $DIR_X) ? yx : yx.reverse
+                row = coords[0]
+                col = coords[1]
+                myseqs = self[dir][row][val] ||= []
+                    
+                if (myseqs.length == 0) then
+                    myseqs <<= [col]
+                elsif (myseqs[-1][-1]+1 == col) then
+                    myseqs[-1] << col
+                else
+                    myseqs << [col]
+                end
             end
         end
 
+
         def calc_sequences_counter()
-            counter = Hash.new()
+            counter = Counter.new()
             counter[$DIR_X] = (0 .. @board.maxx).map { |x| Hash.new }
             counter[$DIR_Y] = (0 .. @board.maxy).map { |y| Hash.new }
             for x in (0 .. @board.maxx) do
@@ -130,7 +133,7 @@ class HitoriSolver
                     val = @board.cell(0, yx).value
 
                     for dir in [ $DIR_X, $DIR_Y ] do
-                        fill_seqs_counter(counter, dir, yx, val)
+                        counter.set_val(dir, yx, val)
                     end
                 end
             end
