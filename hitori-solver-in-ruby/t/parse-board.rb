@@ -31,4 +31,12 @@ describe "construct_board" do
             board = HitoriSolver::Board.new(2, 4, [[3,2,1],[4,5,6,7]])   
         }.should raise_error(HitoriSolver::WrongRowLenException)
     end
+
+    it "should throw an exception for invalid height" do
+        board = 0
+        lambda {
+            board = HitoriSolver::Board.new(2, 4, [[3,2,1,4],[4,5,6,7], [1,1,2,1]])   
+        }.should raise_error(HitoriSolver::WrongHeightException)
+    end
+    
 end

@@ -1,6 +1,8 @@
 class HitoriSolver
     class WrongRowLenException < RuntimeError
     end
+    class WrongHeightException < RuntimeError
+    end
 
     class Cell
         $UNKNOWN = 0
@@ -42,7 +44,7 @@ class HitoriSolver
                 board << d_row
             end
             if (board.length() != @y_len)
-                raise "There aren't #{@y_len} rows";
+                raise WrongHeightException, "There aren't #{@y_len} rows";
             end
             @cells = board
         end
