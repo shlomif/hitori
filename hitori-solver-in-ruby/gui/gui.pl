@@ -115,9 +115,9 @@ sub perform_solve
     my $self = shift;
     my $move = shift;
 
-    my $method = "_solve_using_$move";
+    my $method = $move;
 
-    $self->{board}->$method();
+    $self->{process}->$method();
 
     $self->OnPaint();
 
@@ -159,10 +159,8 @@ sub OnInit
         wxDefaultPosition(),
         wxDefaultSize(),
         [qw(
-            surround_island
-            surrounded_by_blacks
-            adjacent_whites
-            distance_from_islands
+            analyze_sequences
+            apply_a_single_move
         )]
     );
     $sizer->Add($frame->{list}, 1, wxALL(), 10);
