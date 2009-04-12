@@ -68,7 +68,7 @@ sub OnPaint
 
     $dc->SetPen( $black_pen );
 
-    $dc->SetTextForeground( Wx::Colour->new(0, 0, 255) );
+    my $gray_color = Wx::Colour->new((204) x 3);
 
     my $board = $self->{board};
 
@@ -82,7 +82,7 @@ sub OnPaint
 
             if ($status eq $UNKNOWN)
             {
-                $dc->SetBrush(wxGREY_BRUSH());
+                $dc->SetBrush(Wx::Brush->new($gray_color, Wx::wxSOLID()));
             }
             elsif ($status eq $WHITE)
             {
@@ -101,6 +101,12 @@ sub OnPaint
 
             my $c_x = $p_x + $cell_width/2;
             my $c_y = $p_y + $cell_height/2;
+
+            $dc->SetTextForeground(
+                ($status eq $BLACK)
+                ? $gray_color
+                : Wx::Colour->new((0) x 3)
+            );
 
             my ($w, $h) = $dc->GetTextExtent($val);
             $dc->DrawText(
@@ -233,7 +239,7 @@ require 'hitori-solver.rb'
 
 class HitoriSolver::Process
     def format_moves()
-        return self.performed_moves.map { |m| "(#{m.y},#{m.y}) <- #{m.color} - #{m.reason}" }
+        return self.performed_moves.map { |m| "(#{m.y},#{m.x}) = #{m.color} - #{m.reason}" }
     end
 end
 
