@@ -119,6 +119,7 @@ sub perform_solve
 
     $self->{process}->$method();
 
+
     $self->OnPaint();
 
     return;
@@ -165,6 +166,16 @@ sub OnInit
     );
     $sizer->Add($frame->{list}, 1, wxALL(), 10);
 
+    $frame->{performed_moves_list} = Wx::ListBox->new(
+        $frame,
+        -1,
+        wxDefaultPosition(),
+        wxDefaultSize(),
+        []
+    );
+
+    $sizer->Add($frame->{performed_moves_list}, 1, wxALL(), 10);
+
     $frame->SetSize(Wx::Size->new(600,400));
     $frame->Show( 1 );
 
@@ -177,6 +188,10 @@ sub OnInit
             my $sel = $event->GetSelection();
             my $string = $list->GetString($sel);
             $frame->{board}->perform_solve($string);
+
+            $frame->{performed_moves_list}->Set(
+                [ @{$self->{process}->format_moves()} ]
+            );
         }
     );
 
@@ -207,6 +222,12 @@ __END__
 __Ruby__
 
 require 'hitori-solver.rb'
+
+class HitoriSolver::Process
+    def format_moves()
+        return self.performed_moves.map { |m| "(#{m.y},#{m.y}) <- #{m.color} - #{m.reason}" }
+    end
+end
 
 class MyHitoriGame
     def initialize()
