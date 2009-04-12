@@ -221,20 +221,25 @@ class HitoriSolver
         end
 
         Offsets = [[-1,0],[0,-1],[0,1],[1,0]]
+
+        def _apply_black_move(move)
+            yx = [move.y, move.x]
+            @board.cell_yx(*yx).mark_as_black()
+            for offset_yx in Offsets do
+                new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
+                if @board.in_bounds(*new_yx) then
+                    add_move(
+                        DIR_X, new_yx[0], new_yx[1],
+                        "white",
+                        "Neighboring cells to a black one should be white"
+                    )
+                end
+            end
+        end
+
         def _apply_move(move)
             if (move.color == "black") then
-                yx = [move.y, move.x]
-                @board.cell_yx(*yx).mark_as_black()
-                for offset_yx in Offsets do
-                    new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
-                    if @board.in_bounds(*new_yx) then
-                        add_move(
-                            DIR_X, new_yx[0], new_yx[1],
-                            "white",
-                            "Neighboring cells to a black one should be white"
-                        )
-                    end
-                end
+                return _apply_black_move(move)
             end
         end
 
