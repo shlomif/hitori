@@ -29,6 +29,9 @@ class HitoriSolver
     end
 
     class Board
+        attr_reader :x_len
+        attr_reader :y_len
+
         def initialize(height, width, contents) 
             @x_len = width
             @y_len = height
@@ -49,8 +52,56 @@ class HitoriSolver
             end
             @cells = board
         end
+
         def cell_yx(y,x)
             return @cells[y][x]
+        end
+
+        def cell(dir, coords)
+            if dir == 0 then
+                return cell_yx(coords[0], coords[1])
+            else
+                return cell_yx(coords[1], coords[0])
+            end
+        end
+
+        def maxx()
+            return @x_len-1
+        end
+
+        def maxy()
+            return @y_len-1
+        end
+
+    end
+
+    class Process
+        def initialize(board)
+            @board = board
+        end
+
+        def solve()
+            for x in (0 .. @board.maxx) do
+                triads = Hash.new();
+                for y in (0 .. @board.maxy) do
+
+                    val = @board.cell_yx(y,x).value
+
+                    triads[val] ||= \
+                        { 'p' => [], 'is_pair' => false}
+
+                    if (triads[val]['p'][-1] == y-1) then
+                        triads[val]['is_pair'] = true;
+                    end
+
+                    triads[val]['p'] << y
+
+                    if ((triads[val]['p'].length() >= 3) &&
+                         triads[val]['is_pair']) then
+
+                    end
+                end
+            end
         end
     end
 end
