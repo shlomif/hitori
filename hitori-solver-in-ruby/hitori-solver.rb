@@ -105,6 +105,11 @@ class HitoriSolver
             return Move.new(*coords)
         end
 
+        def add_move(dir, row, column, color, reason)
+            @moves << get_move(dir, row, column, color, reason)
+            return
+        end
+
         class Counter < Hash
             def set_dir_val(dir, yx, val)
                 coords = (dir == $DIR_X) ? yx : yx.reverse
@@ -127,7 +132,6 @@ class HitoriSolver
                 end
             end
         end
-
 
         def calc_sequences_counter()
             counter = Counter.new()
@@ -161,12 +165,10 @@ class HitoriSolver
                                 raise TwoPairsException, \
                                     "Found two pairs in #{dir} #{row}"
                             else
-                                @moves.push(
-                                    self.get_move(
-                                        dir, row_idx, sorted_seqs[0][1],
-                                        "white",
-                                        "Three in a row"
-                                    )
+                                add_move(
+                                    dir, row_idx, sorted_seqs[0][1],
+                                    "white",
+                                    "Three in a row"
                                 )
                             end
                         elsif (sorted_seqs[0].length() == 2) then
@@ -176,12 +178,10 @@ class HitoriSolver
                                     "Found two pairs in #{dir} #{row}"
                                 end
                                 sorted_seqs[1..-1].each do |seq|
-                                    @moves.push(
-                                        self.get_move(
-                                            dir, row_idx, seq[0],
-                                            "black",
-                                            "An adjacent pair and some standalones mark the standalones as black"
-                                        )
+                                    add_move(
+                                        dir, row_idx, seq[0],
+                                        "black",
+                                        "An adjacent pair and some standalones mark the standalones as black"
                                     )
                                 end
                             end
