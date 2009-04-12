@@ -26,6 +26,9 @@ class HitoriSolver
         end
 
         def mark_as_white()
+            if (@state == BLACK)
+                raise CellShouldBeDifferentColor
+            end
             @state = WHITE
         end
 
@@ -237,9 +240,16 @@ class HitoriSolver
             end
         end
 
+        def _apply_white_move(move)
+            yx = [move.y, move.x]
+            @board.cell_yx(*yx).mark_as_white()
+        end
+
         def _apply_move(move)
             if (move.color == "black") then
                 return _apply_black_move(move)
+            else
+                return _apply_white_move(move)
             end
         end
 
