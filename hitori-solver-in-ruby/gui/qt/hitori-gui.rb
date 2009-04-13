@@ -22,7 +22,6 @@ class CannonField < Qt::Widget
     def initialize(parent, hitori)
         super(parent)
         @hitori = hitori
-        @currentAngle = 45
         @currentForce = 0
         @timerCount = 0;
         @autoShootTimer = Qt::Timer.new( self )
@@ -37,10 +36,6 @@ class CannonField < Qt::Widget
         @barrelRect = Qt::Rect.new(30, -5, 20, 10)
     end
 
-    def angle() 
-        return @currentAngle 
-    end
-
     def gameOver() 
         return @gameEnded 
     end
@@ -50,7 +45,6 @@ class CannonField < Qt::Widget
             return
         end
         @timerCount = 0
-        @shootAngle = @currentAngle
         @shootForce = @currentForce
         @autoShootTimer.start( 25 )
         emit canShoot( false )
@@ -195,7 +189,6 @@ class CannonField < Qt::Widget
     def barrelHit( pos )
         matrix = Qt::Matrix.new
         matrix.translate( 0, height() )
-        matrix.rotate( - @currentAngle )
         matrix = matrix.inverted()
         return @barrelRect.contains( matrix.map(pos) )
     end
