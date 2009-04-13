@@ -25,18 +25,31 @@ class HitoriSolver
             @value = val
         end
 
-        def mark_as_white()
-            if (@state == BLACK)
+        # If the existing state is unknown, marks the cell as the new color
+        # and returns true. (So it's a performed move)
+        #
+        # If the existing state is the right color, then return false, because
+        # we're not performing a new move.
+        #
+        # If we try to convert the cell into a new color, then raise an
+        # unsolvable exception.
+        def _mark_as(new_state)
+            if (@state == UNKNOWN)
+                @state = new_state
+                return true
+            elsif (@state == new_state)
+                return false
+            else
                 raise CellShouldBeDifferentColor
             end
-            @state = WHITE
+        end
+
+        def mark_as_white()
+            return _mark_as(WHITE)
         end
 
         def mark_as_black()
-            if (@state == WHITE)
-                raise CellShouldBeDifferentColor
-            end
-            @state = BLACK
+            return _mark_as(BLACK)
         end
     end
 
@@ -227,17 +240,21 @@ class HitoriSolver
         end
 
         def apply_a_single_move()
-            if (@moves.length() > 0) then
-                move = @moves.shift()
-                _apply_move(move)
+            while (@moves.length() > 0) do
+                if _apply_move(@moves.shift()) then
+                    return true
+                end
             end
+            return false
         end
 
         Offsets = [[-1,0],[0,-1],[0,1],[1,0]]
 
         def _apply_black_move(move)
             yx = [move.y, move.x]
-            @board.cell_yx(*yx).mark_as_black()
+            if !@board.cell_yx(*yx).mark_as_black() then
+                return false
+            end
             for offset_yx in Offsets do
                 new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
                 if @board.in_bounds(*new_yx) then
@@ -248,11 +265,14 @@ class HitoriSolver
                     )
                 end
             end
+            return true
         end
 
         def _apply_white_move(move)
             yx = [move.y, move.x]
-            @board.cell_yx(*yx).mark_as_white()
+            if (!@board.cell_yx(*yx).mark_as_white())
+                return false
+            end
             val = @board.cell_yx(*yx).value
             # Look for identical values in the same x/y
             # and mark them as black.
@@ -272,15 +292,17 @@ class HitoriSolver
                     end
                 end
             end
+            return true
         end
 
         def _apply_move(move)
-            if (move.color == "black") then
-                _apply_black_move(move)
-            else
-                _apply_white_move(move)
+            ret = (move.color == "black") \
+                ? _apply_black_move(move) \
+                : _apply_white_move(move)
+            if (ret)
+                @performed_moves << move
             end
-            @performed_moves << move
+            return ret
         end
     end
 end

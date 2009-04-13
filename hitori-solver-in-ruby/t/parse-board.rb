@@ -42,7 +42,7 @@ describe "construct_board" do
     end
 end
 
-describe "process for Board No. 1" do
+describe "Process for Board No. 1" do
 
     before (:each) do
         contents = [
@@ -108,5 +108,29 @@ describe "process for Board No. 1" do
         process.moves[2].y.should == 2
         process.moves[2].x.should == 1
         process.moves[2].color.should == "black"
+    end
+
+    it "should not repeat moves" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        #
+        board = @board
+        process = @process
+
+        process.analyze_sequences()
+
+        done_moves = Hash.new()
+        next_move = 0
+
+        get_move_key = lambda { |m| return [m.y,m.x].join(",") }
+        
+        while process.moves.length() > 0 do
+            while next_move < process.performed_moves.length()
+                key = get_move_key.call(process.performed_moves[next_move])
+                done_moves.has_key?(key).should == false
+                done_moves[key] = 1
+                next_move += 1
+            end
+            process.apply_a_single_move()
+        end
     end
 end
