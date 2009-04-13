@@ -22,9 +22,6 @@ class CannonField < Qt::Widget
     def initialize(parent, hitori)
         super(parent)
         @hitori = hitori
-        @currentForce = 0
-        @timerCount = 0;
-        @autoShootTimer = Qt::Timer.new( self )
         @shootAngle = 0
         @shootForce = 0
         @target = Qt::Point.new(0, 0)
@@ -40,15 +37,6 @@ class CannonField < Qt::Widget
         return @gameEnded 
     end
 
-    def shoot()
-        if shooting?
-            return
-        end
-        @timerCount = 0
-        @shootForce = @currentForce
-        @autoShootTimer.start( 25 )
-        emit canShoot( false )
-    end
 
     @@first_time = true
     
@@ -60,26 +48,6 @@ class CannonField < Qt::Widget
         end
         @target = Qt::Point.new( 200 + rand(190), 10  + rand(255) )
         update()
-    end
-    
-    def setGameOver()
-        if @gameEnded
-            return
-        end
-        if shooting?
-            @autoShootTimer.stop()
-        end
-        @gameEnded = true
-        update()
-    end
-
-    def restartGame()
-        if shooting?
-            @autoShootTimer.stop()
-        end
-        @gameEnded = false
-        update()
-        emit canShoot( true )
     end
     
     def mousePressEvent( e )
@@ -157,7 +125,6 @@ class CannonField < Qt::Widget
     def shotRect()
         gravity = 4.0
 
-        time      = @timerCount / 4.0
         velocity  = @shootForce
         radians   = @shootAngle*3.14159265/180.0
 
@@ -177,10 +144,6 @@ class CannonField < Qt::Widget
         r = Qt::Rect.new( 0, 0, 20, 10 )
         r.moveCenter( Qt::Point.new(@target.x(),height() - 1 - @target.y()) )
         return r
-    end
-    
-    def shooting?
-        return @autoShootTimer.active?
     end
 end
 
@@ -258,20 +221,12 @@ class GameBoard < Qt::Widget
         gridLayout.setColumnStretch( 1, 10 )
 		setLayout(gridLayout)
     
-        newGame()
     end
     
     def perform_op(item)
         method = item.text()
         @hitori.process.send(method)
         @cannonField.repaint()
-    end
-
-    def newGame()
-        @shotsLeft.display( 15.0 )
-        @hits.display( 0 )
-        @cannonField.restartGame
-        @cannonField.newTarget
     end
 end
 
