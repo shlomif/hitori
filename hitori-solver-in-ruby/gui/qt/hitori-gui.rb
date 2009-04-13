@@ -14,9 +14,6 @@ include Math
 
 class CannonField < Qt::Widget
 
-    signals 'angleChanged(int)',
-            'canShoot(bool)'
-
     slots  'newTarget()', 'setGameOver()', 'restartGame()'
 
     def initialize(parent, hitori)
@@ -170,9 +167,6 @@ class GameBoard < Qt::Widget
         shoot = Qt::PushButton.new( '&Shoot' )
         shoot.font = Qt::Font.new( 'Times', 18, Qt::Font::Bold )
 
-        connect( @cannonField, SIGNAL('canShoot(bool)'),
-                    shoot, SLOT('setEnabled(bool)') )
-                                
         restart = Qt::PushButton.new( '&New Game' )
         restart.font = Qt::Font.new( 'Times', 18, Qt::Font::Bold )
 
