@@ -10,9 +10,7 @@ $VERBOSE = true; $:.unshift File.dirname($0)
 
 require 'Qt'
 
-include Math
-
-class CannonField < Qt::Widget
+class HitoriField < Qt::Widget
     def initialize(parent, hitori)
         super(parent)
         @hitori = hitori
@@ -85,7 +83,7 @@ class GameBoard < Qt::Widget
 
         @hitori = hitori
 
-        @cannonField = CannonField.new(self, hitori)
+        @hitoriField = HitoriField.new(self, hitori)
 
         shoot = Qt::PushButton.new( '&Shoot' )
         shoot.font = Qt::Font.new( 'Times', 18, Qt::Font::Bold )
@@ -127,7 +125,7 @@ class GameBoard < Qt::Widget
         @performed_moves_list = performed_moves_list
 
         cannonLayout = Qt::VBoxLayout.new
-        cannonLayout.addWidget(@cannonField)
+        cannonLayout.addWidget(@hitoriField)
         cannonBox.layout = cannonLayout
 
         gridLayout = Qt::GridLayout.new
@@ -143,7 +141,7 @@ class GameBoard < Qt::Widget
     def perform_op(item)
         method = item.text()
         @hitori.process.send(method)
-        @cannonField.repaint()
+        @hitoriField.repaint()
     end
 end
 
