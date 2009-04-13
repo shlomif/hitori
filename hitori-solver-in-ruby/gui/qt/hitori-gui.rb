@@ -13,60 +13,11 @@ require 'Qt'
 include Math
 
 class CannonField < Qt::Widget
-
-    slots  'newTarget()', 'setGameOver()', 'restartGame()'
-
     def initialize(parent, hitori)
         super(parent)
         @hitori = hitori
-        @gameEnded = false
-        @barrelPressed = false
         setPalette( Qt::Palette.new( Qt::Color.new( 250, 250, 200) ) )
         setAutoFillBackground(true)
-        newTarget()
-        @barrelRect = Qt::Rect.new(30, -5, 20, 10)
-    end
-
-    def gameOver() 
-        return @gameEnded 
-    end
-
-
-    @@first_time = true
-    
-    def newTarget()
-        if @@first_time
-            @@first_time = false
-            midnight = Qt::Time.new( 0, 0, 0 )
-            srand( midnight.secsTo(Qt::Time.currentTime()) )
-        end
-        update()
-    end
-    
-    def mousePressEvent( e )
-        if e.button() != Qt::LeftButton
-            return
-        end
-    end
-
-    def mouseMoveEvent( e )
-        if !@barrelPressed
-            return
-        end
-        pnt = e.pos();
-        if pnt.x() <= 0
-            pnt.setX( 1 )
-        end
-        if pnt.y() >= height()
-            pnt.setY( height() - 1 )
-        end
-        rad = atan2((rect().bottom()-pnt.y()), pnt.x())
-    end
-
-    def mouseReleaseEvent( e )
-        if e.button() == Qt::LeftButton
-            @barrelPressed = false
-        end
     end
 
     Cell_Width = 30
