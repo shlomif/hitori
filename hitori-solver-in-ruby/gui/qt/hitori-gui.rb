@@ -14,7 +14,7 @@ include Math
 
 class CannonField < Qt::Widget
 
-    signals 'hit()', 'missed()', 'angleChanged(int)',
+    signals 'angleChanged(int)',
             'canShoot(bool)'
 
     slots  'newTarget()', 'setGameOver()', 'restartGame()'
@@ -85,9 +85,6 @@ class CannonField < Qt::Widget
     def mousePressEvent( e )
         if e.button() != Qt::LeftButton
             return
-        end
-        if barrelHit( e.pos() )
-            @barrelPressed = true
         end
     end
 
@@ -182,17 +179,6 @@ class CannonField < Qt::Widget
         return r
     end
     
-    def barrierRect()
-        return Qt::Rect.new( 145, height() - 100, 15, 99 )
-    end
-
-    def barrelHit( pos )
-        matrix = Qt::Matrix.new
-        matrix.translate( 0, height() )
-        matrix = matrix.inverted()
-        return @barrelRect.contains( matrix.map(pos) )
-    end
-
     def shooting?
         return @autoShootTimer.active?
     end
@@ -200,7 +186,7 @@ end
 
 class GameBoard < Qt::Widget
 
-    slots 'perform_op(QListWidgetItem *)', 'hit()', 'missed()', 'newGame()'
+    slots 'perform_op(QListWidgetItem *)', 'newGame()'
 
     attr_reader :hitori
 
@@ -218,11 +204,6 @@ class GameBoard < Qt::Widget
 
         @cannonField = CannonField.new(self, hitori)
 
-        connect( @cannonField, SIGNAL('hit()'),
-                    self, SLOT('hit()') )
-        connect( @cannonField, SIGNAL('missed()'),
-                    self, SLOT('missed()') )
-                
         shoot = Qt::PushButton.new( '&Shoot' )
         shoot.font = Qt::Font.new( 'Times', 18, Qt::Font::Bold )
 
@@ -284,21 +265,6 @@ class GameBoard < Qt::Widget
         method = item.text()
         @hitori.process.send(method)
         @cannonField.repaint()
-    end
-
-    def hit()
-        @hits.display( @hits.intValue() + 1 )
-        if @shotsLeft.intValue() == 0
-            @cannonField.setGameOver
-        else
-            @cannonField.newTarget
-        end
-    end
-
-    def missed()
-        if @shotsLeft.intValue() == 0
-            @cannonField.setGameOver
-        end
     end
 
     def newGame()
