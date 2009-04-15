@@ -78,8 +78,8 @@ class GameBoard < Qt::Widget
     
         connect(quit, SIGNAL('clicked()'), $qApp, SLOT('quit()'))
     
-        cannonBox = Qt::Frame.new
-        cannonBox.frameStyle = Qt::Frame::WinPanel | Qt::Frame::Sunken
+        hitoriBox = Qt::Frame.new
+        hitoriBox.frameStyle = Qt::Frame::WinPanel | Qt::Frame::Sunken
 
         @hitori = hitori
 
@@ -118,22 +118,23 @@ class GameBoard < Qt::Widget
 
         performed_moves_list = Qt::ListWidget.new
 
-        leftLayout = Qt::VBoxLayout.new()
-        leftLayout.addWidget( ops_list )
-        leftLayout.addWidget( performed_moves_list )
+        bottomLayout = Qt::HBoxLayout.new()
+        bottomLayout.addWidget( ops_list )
+        bottomLayout.addWidget( performed_moves_list )
 
         @performed_moves_list = performed_moves_list
 
-        cannonLayout = Qt::VBoxLayout.new
-        cannonLayout.addWidget(@hitoriField)
-        cannonBox.layout = cannonLayout
+        hitoriLayout = Qt::VBoxLayout.new
+        hitoriLayout.addWidget(@hitoriField)
+        hitoriBox.layout = hitoriLayout
 
         gridLayout = Qt::GridLayout.new
         gridLayout.addWidget( quit, 0, 0 )
         gridLayout.addLayout(topLayout, 0, 1)
-        gridLayout.addLayout(leftLayout, 1, 0)
-        gridLayout.addWidget( cannonBox, 1, 1, 2, 1 )
+        gridLayout.addWidget( hitoriBox, 1, 0, 1, 2 )
+        gridLayout.addLayout(bottomLayout, 2, 0, 1, 2)
         gridLayout.setColumnStretch( 1, 10 )
+        gridLayout.setRowMinimumHeight( 1, 200 )
 		setLayout(gridLayout)
     
     end
