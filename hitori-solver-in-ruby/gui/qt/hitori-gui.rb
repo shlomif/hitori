@@ -143,6 +143,11 @@ class GameBoard < Qt::Widget
         method = item.text()
         @hitori.process.send(method)
         @hitoriField.repaint()
+
+        @performed_moves_list.clear()
+        @performed_moves_list.addItems(
+            @hitori.process.format_moves()
+        )
     end
 end
 
