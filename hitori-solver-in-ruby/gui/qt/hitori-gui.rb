@@ -67,7 +67,7 @@ end
 
 class GameBoard < Qt::Widget
 
-    slots 'perform_op(QListWidgetItem *)', 'newGame()'
+    slots 'perform_op(QListWidgetItem *)'
 
     attr_reader :hitori
 
@@ -85,29 +85,15 @@ class GameBoard < Qt::Widget
 
         @hitoriField = HitoriField.new(self, hitori)
 
-        shoot = Qt::PushButton.new( '&Shoot' )
-        shoot.font = Qt::Font.new( 'Times', 18, Qt::Font::Bold )
-
-        restart = Qt::PushButton.new( '&New Game' )
-        restart.font = Qt::Font.new( 'Times', 18, Qt::Font::Bold )
-
-        connect( restart, SIGNAL('clicked()'), self, SLOT('newGame()') )
-
-        @hits = Qt::LCDNumber.new( 2, self )
-        @shotsLeft = Qt::LCDNumber.new( 2, self  )
         hitsLabel = Qt::Label.new( 'HITS', self  )
         shotsLeftLabel = Qt::Label.new( 'SHOTS LEFT', self  )
                 
         Qt::Shortcut.new(Qt::KeySequence.new(Qt::CTRL + Qt::Key_Q), self, SLOT('close()'))
                                      
         topLayout = Qt::HBoxLayout.new
-        topLayout.addWidget(shoot)
-        topLayout.addWidget(@hits)
         topLayout.addWidget(hitsLabel)
-        topLayout.addWidget(@shotsLeft)
         topLayout.addWidget(shotsLeftLabel)
         topLayout.addStretch(1)
-        topLayout.addWidget(restart)
 
         ops_list = Qt::ListWidget.new
         ops_list.addItem("analyze_sequences")
