@@ -85,14 +85,9 @@ class GameBoard < Qt::Widget
 
         @hitoriField = HitoriField.new(self, hitori)
 
-        hitsLabel = Qt::Label.new( 'HITS', self  )
-        shotsLeftLabel = Qt::Label.new( 'SHOTS LEFT', self  )
-                
         Qt::Shortcut.new(Qt::KeySequence.new(Qt::CTRL + Qt::Key_Q), self, SLOT('close()'))
                                      
         topLayout = Qt::HBoxLayout.new
-        topLayout.addWidget(hitsLabel)
-        topLayout.addWidget(shotsLeftLabel)
         topLayout.addStretch(1)
 
         ops_list = Qt::ListWidget.new
