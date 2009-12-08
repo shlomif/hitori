@@ -160,5 +160,15 @@ describe "Intermediate Process for Board No. 1" do
 
         board.cell_yx(0,0).value.should == 2
         board.cell_yx(0,0).state.should == HitoriSolver::Cell::BLACK 
+
+        board.cell_yx(0,1).value.should == 1
+        board.cell_yx(0,1).state.should == HitoriSolver::Cell::WHITE
+
+        board.cell_yx(1,0).value.should == 4
+        board.cell_yx(1,0).state.should == HitoriSolver::Cell::WHITE
+
+        board.cell_yx(1,2).value.should == 3
+        board.cell_yx(1,2).state.should == HitoriSolver::Cell::UNKNOWN
+
     end
 end
