@@ -171,4 +171,28 @@ describe "Intermediate Process for Board No. 1" do
         board.cell_yx(1,2).state.should == HitoriSolver::Cell::UNKNOWN
 
     end
+
+    it "white_regions should be OK." do
+        regions_manager = HitoriSolver::WhiteRegions.new(@board)
+        regions_manager.calc_regions()
+
+        regions_manager.regions[0].should == { 
+            [0,1] => true, [1,0] => true, [1,1] => true, [2,0] => true,
+        };
+    end
+
+    it "should expand white-colored areas" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        #
+        board = @board
+        process = @process
+
+        process.expand_white_regions()
+
+        # process.moves[0].y.should == 3
+        # process.moves[0].x.should == 0
+        # process.moves[0].color.should == "white"
+
+    end
+
 end

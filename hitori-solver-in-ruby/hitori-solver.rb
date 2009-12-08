@@ -133,6 +133,82 @@ class HitoriSolver
         end
     end
 
+    class WhiteRegions
+        
+        attr_reader :regions, :cells_map
+
+        def initialize(board)
+            @board = board
+            @regions = []
+            @cells_map = {}
+        end
+
+        def _find_regions()
+            for y in (0 .. @board.maxy) do
+                for x in (0 .. @board.maxx) do
+                    yx = [y,x]
+                    if @board.cell_yx(*yx).state == Cell::WHITE then
+                        found_regions = []
+                        for offset_yx in [[-1,0],[0,-1]] do
+                            new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
+                            if (! @board.in_bounds(*new_yx)) then
+                                next
+                            end
+                            if @board.cell_yx(*new_yx).state != Cell::WHITE then
+                                next
+                            end
+                            found_regions << @cells_map[new_yx]
+                        end
+                        new_yx = nil
+                        
+                        add_to_region = lambda {|r|
+                            @cells_map[yx] = r
+                            @regions[r][yx] = true
+                        }
+                        if found_regions.length == 0 then
+                            @cells_map[yx] = @regions.length
+                            @regions << { yx => true }
+                        elsif found_regions.length == 1 then
+                            add_to_region.call(found_regions[0])
+                        else
+
+                            # found two regions - let's merge.
+                            r_min = found_regions.min
+                            r_max = found_regions.max
+
+                            if (r_min == r_max) then
+                                add_to_region.call(r_min)
+                            else
+                                @regions[r_max].each_key do |yx_temp|
+                                    @cells_map[yx_temp] = r_min
+                                end
+                                @regions[r_min].merge!(
+                                    @regions[r_max]
+                                )
+                                # Mark as consumed by r_min.
+                                @regions[r_max] = r_min
+                                add_to_region.call(r_min)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        def _optimize_regions()
+            new_regions = @regions.find_all { |r| r.class == Hash }
+            new_regions.each_with_index do |members,i| 
+                members.each_key { |yx| @cells_map[yx] = i }
+            end
+            @regions = new_regions
+        end
+
+        def calc_regions()
+            _find_regions()
+            _optimize_regions()
+        end
+    end
+
     class Process
         attr_reader :moves, :performed_moves
         def initialize(board)
@@ -242,6 +318,10 @@ class HitoriSolver
                     end
                 end
             end
+        end
+
+        def expand_white_regions()
+
         end
 
         def apply_a_single_move()
