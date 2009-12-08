@@ -153,6 +153,19 @@ class HitoriSolver
         end
     end
 
+    class OffsetsList
+        def initialize(offsets)
+            @offsets = offsets
+        end
+
+        def loop(init_yx)
+            for offset_yx in @offsets do
+                new_yx = [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
+                yield new_yx
+            end
+        end
+    end
+
     class WhiteRegions
         
         attr_reader :regions, :cells_map
@@ -163,11 +176,12 @@ class HitoriSolver
             @cells_map = {}
         end
 
+        Prev_Offsets = OffsetsList.new([[-1,0],[0,-1]])
+
         def _find_regions()
             @board.loop_over_whites do |yx|
                 found_regions = []
-                for offset_yx in [[-1,0],[0,-1]] do
-                    new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
+                Prev_Offsets.loop(yx) do |new_yx|
                     if (! @board.in_bounds(*new_yx)) then
                         next
                     end
@@ -348,16 +362,15 @@ class HitoriSolver
             return false
         end
 
-        Offsets = [[-1,0],[0,-1],[0,1],[1,0]]
+        Offsets = OffsetsList.new([[-1,0],[0,-1],[0,1],[1,0]])
 
         def _apply_black_move(move)
             yx = [move.y, move.x]
             if !@board.cell_yx(*yx).mark_as_black() then
                 return false
             end
-            for offset_yx in Offsets do
-                new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
-                if @board.in_bounds(*new_yx) then
+            Offsets.loop(yx) do |new_yx|
+               if @board.in_bounds(*new_yx) then
                     add_move(
                         DIR_X, new_yx[0], new_yx[1],
                         "white",
