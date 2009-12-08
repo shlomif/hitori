@@ -158,10 +158,12 @@ class HitoriSolver
             @offsets = offsets
         end
 
-        def loop(init_yx)
+        def loop(init_yx, board)
             for offset_yx in @offsets do
                 new_yx = [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
-                yield new_yx
+                if board.in_bounds(*new_yx) then
+                    yield new_yx
+                end
             end
         end
     end
@@ -181,10 +183,7 @@ class HitoriSolver
         def _find_regions()
             @board.loop_over_whites do |yx|
                 found_regions = []
-                Prev_Offsets.loop(yx) do |new_yx|
-                    if (! @board.in_bounds(*new_yx)) then
-                        next
-                    end
+                Prev_Offsets.loop(yx, @board) do |new_yx|
                     if ! @board.cell_yx(*new_yx).is_white() then
                         next
                     end
@@ -369,14 +368,12 @@ class HitoriSolver
             if !@board.cell_yx(*yx).mark_as_black() then
                 return false
             end
-            Offsets.loop(yx) do |new_yx|
-               if @board.in_bounds(*new_yx) then
-                    add_move(
-                        DIR_X, new_yx[0], new_yx[1],
-                        "white",
-                        "Neighboring cells to a black one should be white"
-                    )
-                end
+            Offsets.loop(yx, @board) do |new_yx|
+                add_move(
+                    DIR_X, new_yx[0], new_yx[1],
+                    "white",
+                    "Neighboring cells to a black one should be white"
+                )
             end
             return true
         end
