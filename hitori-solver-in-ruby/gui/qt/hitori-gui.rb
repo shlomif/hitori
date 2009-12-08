@@ -67,7 +67,7 @@ end
 
 class GameBoard < Qt::Widget
 
-    slots 'perform_op(QListWidgetItem *)'
+    slots 'perform_op(QListWidgetItem *)', 'dump_board()'
 
     attr_reader :hitori
 
@@ -77,6 +77,10 @@ class GameBoard < Qt::Widget
         quit.font = Qt::Font.new('Times', 18, Qt::Font::Bold)
     
         connect(quit, SIGNAL('clicked()'), $qApp, SLOT('quit()'))
+
+        dump_button = Qt::PushButton.new('&Dump state')
+        dump_button.font = Qt::Font.new('Times', 18, Qt::Font::Bold)
+        connect(dump_button, SIGNAL('clicked()'), self, SLOT('dump_board()'))
     
         hitoriBox = Qt::Frame.new
         hitoriBox.frameStyle = Qt::Frame::WinPanel | Qt::Frame::Sunken
@@ -109,8 +113,12 @@ class GameBoard < Qt::Widget
         hitoriLayout.addWidget(@hitoriField)
         hitoriBox.layout = hitoriLayout
 
+        buttonLayout = Qt::HBoxLayout.new
+        buttonLayout.addWidget(quit)
+        buttonLayout.addWidget(dump_button)
+
         gridLayout = Qt::GridLayout.new
-        gridLayout.addWidget( quit, 0, 0 )
+        gridLayout.addLayout( buttonLayout, 0, 0 )
         gridLayout.addLayout(topLayout, 0, 1)
         gridLayout.addWidget( hitoriBox, 1, 0, 1, 2 )
         gridLayout.addLayout(bottomLayout, 2, 0, 1, 2)
@@ -118,6 +126,10 @@ class GameBoard < Qt::Widget
         gridLayout.setRowMinimumHeight( 1, 200 )
 		setLayout(gridLayout)
     
+    end
+
+    def dump_board()
+        @hitori.dump_state_to_file("dump.rb");
     end
     
     def perform_op(item)
@@ -140,6 +152,26 @@ class HitoriSolver::Process
     end
 end
 
+class HitoriSolver
+    class Cell
+        def status_as_string()
+            return \
+                ((state == HitoriSolver::Cell::WHITE) \
+                 ? "HitoriSolver::Cell::WHITE" \
+                 : "HitoriSolver::Cell::BLACK" \
+                )
+        end
+
+        def as_string()
+            if @state == HitoriSolver::Cell::UNKNOWN then
+                return @value
+            else
+                return "[#{@value},#{status_as_string()}]"
+            end
+        end
+    end
+end
+
 class MyHitoriGame
     attr_reader :board, :process
     def initialize()
@@ -153,6 +185,22 @@ class MyHitoriGame
 
         @board = HitoriSolver::Board.new(5, 5, contents)
         @process = HitoriSolver::Process.new(@board)
+    end
+
+    def dump_state_to_file(filename)
+        b = @board
+
+        File.open(filename, "w") do |out|
+            out.print("[\n");
+            for y in (0 .. b.maxy) do
+                out.print("    [");
+                for x in (0 .. b.maxx) do
+                     out.print(@board.cell_yx(y, x).as_string(), ",")
+                end
+                out.print("],\n");
+            end
+            out.print("]\n");
+        end
     end
 end
 
