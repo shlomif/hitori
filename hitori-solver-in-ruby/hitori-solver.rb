@@ -22,7 +22,12 @@ class HitoriSolver
 
         def initialize(val)
             @state = UNKNOWN
-            @value = val
+            if (val.class == Array) then
+                @value = val[0]
+                @state = val[1]
+            else
+                @value = val
+            end
         end
 
         # If the existing state is unknown, marks the cell as the new color

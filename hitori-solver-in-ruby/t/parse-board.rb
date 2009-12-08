@@ -134,3 +134,31 @@ describe "Process for Board No. 1" do
         end
     end
 end
+
+describe "Intermediate Process for Board No. 1" do
+
+    before (:each) do
+
+        contents = [
+            [[2,HitoriSolver::Cell::BLACK],[1,HitoriSolver::Cell::WHITE],3,2,4,],
+            [[4,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::WHITE],3,2,2,],
+            [[3,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::BLACK],[2,HitoriSolver::Cell::WHITE],5,1,],
+            [1,[4,HitoriSolver::Cell::WHITE],[3,HitoriSolver::Cell::BLACK],[3,HitoriSolver::Cell::WHITE],2,],
+            [[2,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::BLACK],[1,HitoriSolver::Cell::WHITE],4,3,],
+        ]
+
+        @board = HitoriSolver::Board.new(5, 5, contents)
+
+        @process = HitoriSolver::Process.new(@board)
+    end
+
+    it "should be initialized with proper colors" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        #
+        board = @board
+        process = @process
+
+        board.cell_yx(0,0).value.should == 2
+        board.cell_yx(0,0).state.should == HitoriSolver::Cell::BLACK 
+    end
+end
