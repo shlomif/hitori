@@ -129,6 +129,14 @@ class HitoriSolver
             end
         end
 
+        def loop_over_whites
+            coords_loop do |yx|
+                if cell_yx(*yx).state == Cell::WHITE then
+                    yield yx
+                end
+            end
+        end
+
     end
 
     class Move
@@ -152,49 +160,47 @@ class HitoriSolver
         end
 
         def _find_regions()
-            @board.coords_loop do |yx|
-                if @board.cell_yx(*yx).state == Cell::WHITE then
-                    found_regions = []
-                    for offset_yx in [[-1,0],[0,-1]] do
-                        new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
-                        if (! @board.in_bounds(*new_yx)) then
-                            next
-                        end
-                        if @board.cell_yx(*new_yx).state != Cell::WHITE then
-                            next
-                        end
-                        found_regions << @cells_map[new_yx]
+            @board.loop_over_whites do |yx|
+                found_regions = []
+                for offset_yx in [[-1,0],[0,-1]] do
+                    new_yx = [yx[0]+offset_yx[0], yx[1]+offset_yx[1]]
+                    if (! @board.in_bounds(*new_yx)) then
+                        next
                     end
-                    new_yx = nil
-                    
-                    add_to_region = lambda {|r|
-                        @cells_map[yx] = r
-                        @regions[r][yx] = true
-                    }
-                    if found_regions.length == 0 then
-                        @cells_map[yx] = @regions.length
-                        @regions << { yx => true }
-                    elsif found_regions.length == 1 then
-                        add_to_region.call(found_regions[0])
+                    if @board.cell_yx(*new_yx).state != Cell::WHITE then
+                        next
+                    end
+                    found_regions << @cells_map[new_yx]
+                end
+                new_yx = nil
+                
+                add_to_region = lambda {|r|
+                    @cells_map[yx] = r
+                    @regions[r][yx] = true
+                }
+                if found_regions.length == 0 then
+                    @cells_map[yx] = @regions.length
+                    @regions << { yx => true }
+                elsif found_regions.length == 1 then
+                    add_to_region.call(found_regions[0])
+                else
+
+                    # found two regions - let's merge.
+                    r_min = found_regions.min
+                    r_max = found_regions.max
+
+                    if (r_min == r_max) then
+                        add_to_region.call(r_min)
                     else
-
-                        # found two regions - let's merge.
-                        r_min = found_regions.min
-                        r_max = found_regions.max
-
-                        if (r_min == r_max) then
-                            add_to_region.call(r_min)
-                        else
-                            @regions[r_max].each_key do |yx_temp|
-                                @cells_map[yx_temp] = r_min
-                            end
-                            @regions[r_min].merge!(
-                                @regions[r_max]
-                            )
-                            # Mark as consumed by r_min.
-                            @regions[r_max] = r_min
-                            add_to_region.call(r_min)
+                        @regions[r_max].each_key do |yx_temp|
+                            @cells_map[yx_temp] = r_min
                         end
+                        @regions[r_min].merge!(
+                            @regions[r_max]
+                        )
+                        # Mark as consumed by r_min.
+                        @regions[r_max] = r_min
+                        add_to_region.call(r_min)
                     end
                 end
             end
