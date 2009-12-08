@@ -56,6 +56,10 @@ class HitoriSolver
         def mark_as_black()
             return _mark_as(BLACK)
         end
+
+        def is_white()
+            return @state == WHITE
+        end
     end
 
     DIR_X = 0
@@ -131,7 +135,7 @@ class HitoriSolver
 
         def loop_over_whites
             coords_loop do |yx|
-                if cell_yx(*yx).state == Cell::WHITE then
+                if cell_yx(*yx).is_white() then
                     yield yx
                 end
             end
@@ -167,7 +171,7 @@ class HitoriSolver
                     if (! @board.in_bounds(*new_yx)) then
                         next
                     end
-                    if @board.cell_yx(*new_yx).state != Cell::WHITE then
+                    if ! @board.cell_yx(*new_yx).is_white() then
                         next
                     end
                     found_regions << @cells_map[new_yx]
