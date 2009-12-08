@@ -180,16 +180,21 @@ class HitoriSolver
 
         Prev_Offsets = OffsetsList.new([[-1,0],[0,-1]])
 
+        def _find_adjacent_regions(yx)
+            found_regions = []
+            Prev_Offsets.loop(yx, @board) do |new_yx|
+                if ! @board.cell_yx(*new_yx).is_white() then
+                    next
+                end
+                found_regions << @cells_map[new_yx]
+            end
+            return found_regions
+        end
+
         def _find_regions()
             @board.loop_over_whites do |yx|
-                found_regions = []
-                Prev_Offsets.loop(yx, @board) do |new_yx|
-                    if ! @board.cell_yx(*new_yx).is_white() then
-                        next
-                    end
-                    found_regions << @cells_map[new_yx]
-                end
-                new_yx = nil
+
+                found_regions = _find_adjacent_regions(yx)
                 
                 add_to_region = lambda {|r|
                     @cells_map[yx] = r
