@@ -180,6 +180,31 @@ module HitoriSolver
 
         Prev_Offsets = OffsetsList.new([[-1,0],[0,-1]])
 
+        class Region
+
+            attr_reader :whites
+            def initialize()
+                @whites = {}
+                @adjacent_blacks = {}
+                @adjacent_greys = {}
+            end
+
+            def add_white(yx)
+                @whites[yx] = true
+            end
+
+            def loop_over_whites
+                @whites.each_key do |yx|
+                    yield yx
+                end
+            end
+
+            def merge!(other_region)
+                @whites.merge!(other_region.whites())
+                # TODO : add blacks and greys
+            end
+        end
+
         def _find_adjacent_regions(yx)
             found_regions = []
             Prev_Offsets.loop(yx, @board) do |new_yx|
@@ -196,11 +221,13 @@ module HitoriSolver
 
             add_to_region = lambda {|r|
                 @cells_map[yx] = r
-                @regions[r][yx] = true
+                @regions[r].add_white(yx)
             }
             if found_regions.length == 0 then
                 @cells_map[yx] = @regions.length
-                @regions << { yx => true }
+                new_r = Region.new
+                new_r.add_white(yx)
+                @regions << new_r
             elsif found_regions.length == 1 then
                 add_to_region.call(found_regions[0])
             else
@@ -212,12 +239,10 @@ module HitoriSolver
                 if (r_min == r_max) then
                     add_to_region.call(r_min)
                 else
-                    @regions[r_max].each_key do |yx_temp|
+                    @regions[r_max].loop_over_whites do |yx_temp|
                         @cells_map[yx_temp] = r_min
                     end
-                    @regions[r_min].merge!(
-                        @regions[r_max]
-                    )
+                    @regions[r_min].merge!(@regions[r_max])
                     # Mark as consumed by r_min.
                     @regions[r_max] = r_min
                     add_to_region.call(r_min)
@@ -232,9 +257,9 @@ module HitoriSolver
         end
 
         def _optimize_regions()
-            new_regions = @regions.find_all { |r| r.class == Hash }
+            new_regions = @regions.find_all { |r| r.class == Region }
             new_regions.each_with_index do |members,i| 
-                members.each_key { |yx| @cells_map[yx] = i }
+                members.loop_over_whites { |yx| @cells_map[yx] = i }
             end
             @regions = new_regions
         end

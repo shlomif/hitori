@@ -176,7 +176,7 @@ describe "Intermediate Process for Board No. 1" do
         regions_manager = HitoriSolver::WhiteRegions.new(@board)
         regions_manager.calc_regions()
 
-        regions_manager.regions[0].should == { 
+        regions_manager.regions[0].whites.should == { 
             [0,1] => true, [1,0] => true, [1,1] => true, [2,0] => true,
         };
     end
