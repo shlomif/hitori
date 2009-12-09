@@ -191,40 +191,43 @@ class HitoriSolver
             return found_regions
         end
 
+        def _find_regions_for_coords(yx)
+            found_regions = _find_adjacent_regions(yx)
+
+            add_to_region = lambda {|r|
+                @cells_map[yx] = r
+                @regions[r][yx] = true
+            }
+            if found_regions.length == 0 then
+                @cells_map[yx] = @regions.length
+                @regions << { yx => true }
+            elsif found_regions.length == 1 then
+                add_to_region.call(found_regions[0])
+            else
+
+                # found two regions - let's merge.
+                r_min = found_regions.min
+                r_max = found_regions.max
+
+                if (r_min == r_max) then
+                    add_to_region.call(r_min)
+                else
+                    @regions[r_max].each_key do |yx_temp|
+                        @cells_map[yx_temp] = r_min
+                    end
+                    @regions[r_min].merge!(
+                        @regions[r_max]
+                    )
+                    # Mark as consumed by r_min.
+                    @regions[r_max] = r_min
+                    add_to_region.call(r_min)
+                end
+            end
+        end
+
         def _find_regions()
             @board.loop_over_whites do |yx|
-
-                found_regions = _find_adjacent_regions(yx)
-                
-                add_to_region = lambda {|r|
-                    @cells_map[yx] = r
-                    @regions[r][yx] = true
-                }
-                if found_regions.length == 0 then
-                    @cells_map[yx] = @regions.length
-                    @regions << { yx => true }
-                elsif found_regions.length == 1 then
-                    add_to_region.call(found_regions[0])
-                else
-
-                    # found two regions - let's merge.
-                    r_min = found_regions.min
-                    r_max = found_regions.max
-
-                    if (r_min == r_max) then
-                        add_to_region.call(r_min)
-                    else
-                        @regions[r_max].each_key do |yx_temp|
-                            @cells_map[yx_temp] = r_min
-                        end
-                        @regions[r_min].merge!(
-                            @regions[r_max]
-                        )
-                        # Mark as consumed by r_min.
-                        @regions[r_max] = r_min
-                        add_to_region.call(r_min)
-                    end
-                end
+                _find_regions_for_coords(yx)
             end
         end
 
