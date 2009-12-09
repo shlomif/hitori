@@ -1,4 +1,4 @@
-class HitoriSolver
+module HitoriSolver
     class WrongRowLenException < RuntimeError
     end
     class WrongHeightException < RuntimeError
