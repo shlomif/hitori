@@ -12,6 +12,26 @@ module HitoriSolver
     class CellShouldBeDifferentColor < UnsolvableException
     end
 
+    module Offset_Module
+        class OffsetsList
+            def initialize(offsets)
+                @offsets = offsets
+            end
+
+            def loop(init_yx, board)
+                for offset_yx in @offsets do
+                    new_yx = [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
+                    if board.in_bounds(*new_yx) then
+                        yield new_yx
+                    end
+                end
+            end
+        end
+        
+        Prev_Offsets = OffsetsList.new([[-1,0],[0,-1]])
+        Offsets = OffsetsList.new([[-1,0],[0,-1],[0,1],[1,0]])        
+    end
+
     class Cell
         UNKNOWN = 0
         WHITE = 1
@@ -60,6 +80,15 @@ module HitoriSolver
         def is_white()
             return @state == WHITE
         end
+
+        def is_black()
+            return @state == BLACK
+        end
+ 
+        def is_unknown()
+            return @state == UNKNOWN
+        end
+        
     end
 
     DIR_X = 0
@@ -153,23 +182,9 @@ module HitoriSolver
         end
     end
 
-    class OffsetsList
-        def initialize(offsets)
-            @offsets = offsets
-        end
-
-        def loop(init_yx, board)
-            for offset_yx in @offsets do
-                new_yx = [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
-                if board.in_bounds(*new_yx) then
-                    yield new_yx
-                end
-            end
-        end
-    end
-
     class WhiteRegions
-        
+ 
+
         attr_reader :regions, :cells_map
 
         def initialize(board)
@@ -178,15 +193,15 @@ module HitoriSolver
             @cells_map = {}
         end
 
-        Prev_Offsets = OffsetsList.new([[-1,0],[0,-1]])
-
         class Region
 
-            attr_reader :whites
+            include Offset_Module
+
+            attr_reader :whites, :adjacent_blacks
             def initialize()
                 @whites = {}
                 @adjacent_blacks = {}
-                @adjacent_greys = {}
+                @adjacent_unknowns = {}
             end
 
             def add_white(yx)
@@ -203,11 +218,32 @@ module HitoriSolver
                 @whites.merge!(other_region.whites())
                 # TODO : add blacks and greys
             end
+
+            def _calc_adjacent(board)
+                board.coords_loop do |yx|
+                    # TODO : Write better. The loop with assignment 
+                    # is ugly.
+                    is_adj = false
+                    Offsets.loop(yx, board) do |adj_yx|
+                        if (whites.has_key?(adj_yx)) then
+                            is_adj = true
+                        end
+                    end
+                    if (! is_adj) then
+                        next
+                    end
+                    if board.cell_yx(*yx).is_black() then
+                        @adjacent_blacks[yx] = true
+                    elsif board.cell_yx(*yx).is_unknown() then
+                        @adjacent_unknowns[yx] = true
+                    end
+                end
+            end
         end
 
         def _find_adjacent_regions(yx)
             found_regions = []
-            Prev_Offsets.loop(yx, @board) do |new_yx|
+            Offset_Module::Prev_Offsets.loop(yx, @board) do |new_yx|
                 if ! @board.cell_yx(*new_yx).is_white() then
                     next
                 end
@@ -258,9 +294,13 @@ module HitoriSolver
 
         def _optimize_regions()
             new_regions = @regions.find_all { |r| r.class == Region }
+
             new_regions.each_with_index do |members,i| 
                 members.loop_over_whites { |yx| @cells_map[yx] = i }
             end
+
+            new_regions.each { |r| r._calc_adjacent(@board) }
+
             @regions = new_regions
         end
 
@@ -290,6 +330,8 @@ module HitoriSolver
         end
 
         class Counter < Hash
+            include Offset_Module
+
             def set_dir_val(dir, yx, val)
                 coords = (dir == DIR_X) ? yx : yx.reverse
                 row = coords[0]
@@ -394,14 +436,13 @@ module HitoriSolver
             return false
         end
 
-        Offsets = OffsetsList.new([[-1,0],[0,-1],[0,1],[1,0]])
 
         def _apply_black_move(move)
             yx = [move.y, move.x]
             if !@board.cell_yx(*yx).mark_as_black() then
                 return false
             end
-            Offsets.loop(yx, @board) do |new_yx|
+            Offset_Module::Offsets.loop(yx, @board) do |new_yx|
                 add_move(
                     DIR_X, new_yx[0], new_yx[1],
                     "white",

@@ -179,6 +179,11 @@ describe "Intermediate Process for Board No. 1" do
         regions_manager.regions[0].whites.should == { 
             [0,1] => true, [1,0] => true, [1,1] => true, [2,0] => true,
         };
+
+        regions_manager.regions[0].adjacent_blacks.should == { 
+            [0,0] => true, [2,1] => true
+        };
+
     end
 
     it "should expand white-colored areas" do
