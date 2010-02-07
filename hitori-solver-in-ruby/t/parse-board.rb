@@ -192,16 +192,16 @@ describe "Intermediate Process for Board No. 1" do
         white_regions = HitoriSolver::WhiteRegions.new(board)
         white_regions.calc_regions()
 
-        region_id = white_regions.cells_map[[4,0]]
-        region = white_regions.regions[region_id]
+        check_region = lambda { |yx, cells|
+            region_id = white_regions.cells_map[yx]
+            region = white_regions.regions[region_id]
 
-        region.whites.should == {[4,0] => true, }
+            region.whites.should == cells.inject({}) {|h, v| h[v] = true; h }
+        }
 
-        region_id = white_regions.cells_map[[0,1]]
-        region = white_regions.regions[region_id]
+        check_region.call([4,0], [[4,0]])
 
-        region.whites.should == {[0,1] => true, [1,0] => true, [1,1] => true,
-            [2,0] => true,}
+        check_region.call([0,1], [[0,1], [1,0], [1,1], [2,0],])
     end
 
     it "should expand white-colored areas" do
