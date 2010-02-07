@@ -186,6 +186,18 @@ describe "Intermediate Process for Board No. 1" do
 
     end
 
+    it "should analyze white-colored regions properly" do
+        board = @board
+
+        white_regions = HitoriSolver::WhiteRegions.new(board)
+
+        white_regions.calc_regions()
+        region_id = white_regions.cells_map[[4,0]]
+        region = white_regions.regions[region_id]
+
+        region.whites.should == {[4,0] => true, }
+    end
+
     it "should expand white-colored areas" do
         # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
         #
