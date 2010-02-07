@@ -98,7 +98,7 @@ class GameBoard < Qt::Widget
         ops_list.addItem("analyze_sequences")
         ops_list.addItem("apply_a_single_move")
 
-        connect(ops_list, SIGNAL('itemDoubleClicked(QListWidgetItem *)'), \
+        connect(ops_list, SIGNAL('itemClicked(QListWidgetItem *)'), \
                 self, SLOT('perform_op(QListWidgetItem *)'))
 
         performed_moves_list = Qt::ListWidget.new
