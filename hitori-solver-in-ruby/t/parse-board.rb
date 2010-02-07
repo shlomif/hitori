@@ -77,9 +77,7 @@ describe "Process for Board No. 1" do
         process.analyze_sequences()
 
         process.moves.length().should == 1
-        process.moves[0].y.should == 3
-        process.moves[0].x.should == 2
-        process.moves[0].color.should == "black"
+        process.moves[0].is_yx_col([3,2],"black");
 
         process.apply_a_single_move()
         board.cell_yx(3,2).state.should == HitoriSolver::Cell::BLACK
