@@ -152,7 +152,7 @@ class HitoriSolver::Process
     end
 end
 
-class HitoriSolver
+module HitoriSolver
     class Cell
         def status_as_string()
             return \
