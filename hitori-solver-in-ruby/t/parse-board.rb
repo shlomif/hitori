@@ -197,11 +197,19 @@ describe "Intermediate Process for Board No. 1" do
             region = white_regions.regions[region_id]
 
             region.whites.should == cells.inject({}) {|h, v| h[v] = true; h }
+
+            return;
         }
 
-        check_region.call([4,0], [[4,0]])
+        verify_region = lambda { |cells|
+            cells.each { |yx| check_region.call(yx, cells) }
 
-        check_region.call([0,1], [[0,1], [1,0], [1,1], [2,0],])
+            return;
+        }
+
+        verify_region.call([[4,0]])
+
+        verify_region.call([[0,1], [1,0], [1,1], [2,0],])
     end
 
     it "should expand white-colored areas" do
