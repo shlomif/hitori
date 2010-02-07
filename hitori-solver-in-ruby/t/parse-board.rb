@@ -219,6 +219,8 @@ describe "Intermediate Process for Board No. 1" do
 
         verify_region.call([[2,2]])
 
+        white_regions.cells_map.has_key?([0,0]).should == false
+
     end
 
     it "should expand white-colored areas" do
