@@ -190,12 +190,18 @@ describe "Intermediate Process for Board No. 1" do
         board = @board
 
         white_regions = HitoriSolver::WhiteRegions.new(board)
-
         white_regions.calc_regions()
+
         region_id = white_regions.cells_map[[4,0]]
         region = white_regions.regions[region_id]
 
         region.whites.should == {[4,0] => true, }
+
+        region_id = white_regions.cells_map[[0,1]]
+        region = white_regions.regions[region_id]
+
+        region.whites.should == {[0,1] => true, [1,0] => true, [1,1] => true,
+            [2,0] => true,}
     end
 
     it "should expand white-colored areas" do
