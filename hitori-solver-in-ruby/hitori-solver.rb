@@ -239,6 +239,10 @@ module HitoriSolver
                     end
                 end
             end
+
+            def get_adjacent_unknowns
+                return @adjacent_unknowns.keys
+            end
         end
 
         def _find_adjacent_regions(yx)
@@ -308,6 +312,11 @@ module HitoriSolver
             _find_regions()
             _optimize_regions()
         end
+
+        def each_region
+            @regions.each { |r| yield r }
+        end
+       
     end
 
     class Process
@@ -424,7 +433,20 @@ module HitoriSolver
         end
 
         def expand_white_regions()
+            white_regions = WhiteRegions.new(@board)
 
+            white_regions.calc_regions()
+
+            white_regions.each_region do |r|
+                unknowns = r.get_adjacent_unknowns()
+                if (unknowns.length == 1)
+                    coords = unknowns[0]
+                    add_move(
+                        DIR_X, coords[0], coords[1],
+                        "white",
+                        "Extending a white region to the only adjacent cell in an unknown state")
+                end
+            end
         end
 
         def apply_a_single_move()

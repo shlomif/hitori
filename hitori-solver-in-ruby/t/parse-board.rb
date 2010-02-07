@@ -9,6 +9,16 @@ class Object
     end
 end
 
+module HitoriSolver
+    class Move
+        # exp == expected.
+        def is_yx_col(exp_yx,exp_color)
+            y.should == exp_yx[0]
+            x.should == exp_yx[1]
+            color.should == exp_color
+        end
+    end
+end
 describe "construct_board" do
     it "board No. 1 should" do
         # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
@@ -233,10 +243,7 @@ describe "Intermediate Process for Board No. 1" do
 
         process.expand_white_regions()
 
-        # process.moves[0].y.should == 3
-        # process.moves[0].x.should == 0
-        # process.moves[0].color.should == "white"
-
+        process.moves[0].is_yx_col([3,0],"white")
     end
 
 end
