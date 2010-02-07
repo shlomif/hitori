@@ -227,7 +227,10 @@ describe "Intermediate Process for Board No. 1" do
 
         process.expand_white_regions()
 
+        process.moves.length.should == 3
         process.moves[0].is_yx_col([3,0],"white")
+        process.moves[1].is_yx_col([3,0],"white")
+        process.moves[2].is_yx_col([4,3],"white")
     end
 
 end
