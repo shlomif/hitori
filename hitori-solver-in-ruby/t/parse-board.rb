@@ -210,6 +210,8 @@ describe "Intermediate Process for Board No. 1" do
         verify_region.call([[4,0]])
 
         verify_region.call([[0,1], [1,0], [1,1], [2,0],])
+
+        verify_region.call([[4,2]])
     end
 
     it "should expand white-colored areas" do
