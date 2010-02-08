@@ -373,7 +373,7 @@ module HitoriSolver
                 myseqs = self[dir][row][val] ||= []
                     
                 if (myseqs.length == 0) then
-                    myseqs <<= [col]
+                    myseqs << [col]
                 elsif (myseqs[-1][-1]+1 == col) then
                     myseqs[-1] << col
                 else
