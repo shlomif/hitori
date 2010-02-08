@@ -358,6 +358,10 @@ module HitoriSolver
             return
         end
 
+        def add_yx_move(yx, color, reason)
+            add_move(DIR_X, yx[0], yx[1], color, reason)
+        end
+
         class Counter < Hash
             include Offset_Module
             include Dirs_Loop
@@ -492,10 +496,11 @@ module HitoriSolver
                 unknowns = r.get_adjacent_unknowns()
                 if (unknowns.length == 1)
                     coords = unknowns[0]
-                    add_move(
-                        DIR_X, coords[0], coords[1],
+                    add_yx_move(
+                        coords,
                         "white",
-                        "Extending a white region to the only adjacent cell in an unknown state")
+                        "Extending a white region to the only adjacent cell in an unknown state"
+                   )
                 end
             end
         end
@@ -516,8 +521,8 @@ module HitoriSolver
                 return false
             end
             Offset_Module::Offsets.loop(yx, @board) do |new_yx|
-                add_move(
-                    DIR_X, new_yx[0], new_yx[1],
+                add_yx_move(
+                    new_yx,
                     "white",
                     "Neighboring cells to a black one should be white"
                 )
