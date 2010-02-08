@@ -119,15 +119,16 @@ module HitoriSolver
             @cells = board
         end
 
-        def cell_yx(y,x)
+        def cell_yx(yx)
+            y, x = yx
             return @cells[y][x]
         end
 
         def cell(dir, coords)
             if dir == DIR_X then
-                return cell_yx(coords[0], coords[1])
+                return cell_yx(coords)
             else
-                return cell_yx(coords[1], coords[0])
+                return cell_yx(coords.reverse)
             end
         end
 
@@ -172,7 +173,7 @@ module HitoriSolver
 
         def loop_over_whites
             coords_loop do |yx|
-                if cell_yx(*yx).is_white() then
+                if cell_yx(yx).is_white() then
                     yield yx
                 end
             end
@@ -240,9 +241,9 @@ module HitoriSolver
                     if (! is_adj) then
                         next
                     end
-                    if board.cell_yx(*yx).is_black() then
+                    if board.cell_yx(yx).is_black() then
                         @adjacent_blacks[yx] = true
-                    elsif board.cell_yx(*yx).is_unknown() then
+                    elsif board.cell_yx(yx).is_unknown() then
                         @adjacent_unknowns[yx] = true
                     end
                 end
@@ -256,7 +257,7 @@ module HitoriSolver
         def _find_adjacent_regions(yx)
             found_regions = []
             Offset_Module::Prev_Offsets.loop(yx, @board) do |new_yx|
-                if ! @board.cell_yx(*new_yx).is_white() then
+                if ! @board.cell_yx(new_yx).is_white() then
                     next
                 end
                 found_regions << @cells_map[new_yx]
@@ -499,7 +500,7 @@ module HitoriSolver
 
         def _apply_black_move(move)
             yx = [move.y, move.x]
-            if !@board.cell_yx(*yx).mark_as_black() then
+            if !@board.cell_yx(yx).mark_as_black() then
                 return false
             end
             Offset_Module::Offsets.loop(yx, @board) do |new_yx|
@@ -514,10 +515,10 @@ module HitoriSolver
 
         def _apply_white_move(move)
             yx = [move.y, move.x]
-            if (!@board.cell_yx(*yx).mark_as_white())
+            if (!@board.cell_yx(yx).mark_as_white())
                 return false
             end
-            val = @board.cell_yx(*yx).value
+            val = @board.cell_yx(yx).value
             # Look for identical values in the same x/y
             # and mark them as black.
             for dir in [ DIR_X, DIR_Y ] do

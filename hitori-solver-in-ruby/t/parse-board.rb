@@ -30,10 +30,10 @@ describe "construct_board" do
             [2,5,1,4,3]
         ]
         board = HitoriSolver::Board.new(5, 5, contents)
-        board.cell_yx(0,0).value.should == 2
-        board.cell_yx(0,1).value.should == 1
-        board.cell_yx(0,2).value.should == 3
-        board.cell_yx(4,2).value.should == 1
+        board.cell_yx([0,0]).value.should == 2
+        board.cell_yx([0,1]).value.should == 1
+        board.cell_yx([0,2]).value.should == 3
+        board.cell_yx([4,2]).value.should == 1
         board.cell(0, [0,1]).value.should == 1
         board.cell(1, [0,1]).value.should == 4        
     end
@@ -80,7 +80,7 @@ describe "Process for Board No. 1" do
         process.moves[0].is_yx_col([3,2],"black");
 
         process.apply_a_single_move()
-        board.cell_yx(3,2).state.should == HitoriSolver::Cell::BLACK
+        board.cell_yx([3,2]).state.should == HitoriSolver::Cell::BLACK
 
         process.moves.length().should == 4
         process.moves[0].is_yx_col([2,2],"white")
@@ -92,13 +92,13 @@ describe "Process for Board No. 1" do
         process.apply_a_single_move()
         process.moves.length().should == 3
 
-        board.cell_yx(2,2).state.should == HitoriSolver::Cell::WHITE
+        board.cell_yx([2,2]).state.should == HitoriSolver::Cell::WHITE
 
         # (y,x) = 3,1 ; color = white
         process.apply_a_single_move()
         process.moves.length().should == 3
 
-        board.cell_yx(3,1).state.should == HitoriSolver::Cell::WHITE
+        board.cell_yx([3,1]).state.should == HitoriSolver::Cell::WHITE
         process.moves[0].is_yx_col([3,3],"white")
         process.moves[1].is_yx_col([4,2],"white")
         process.moves[2].is_yx_col([2,1],"black")
@@ -152,17 +152,17 @@ describe "Intermediate Process for Board No. 1" do
         board = @board
         process = @process
 
-        board.cell_yx(0,0).value.should == 2
-        board.cell_yx(0,0).state.should == HitoriSolver::Cell::BLACK 
+        board.cell_yx([0,0]).value.should == 2
+        board.cell_yx([0,0]).state.should == HitoriSolver::Cell::BLACK 
 
-        board.cell_yx(0,1).value.should == 1
-        board.cell_yx(0,1).state.should == HitoriSolver::Cell::WHITE
+        board.cell_yx([0,1]).value.should == 1
+        board.cell_yx([0,1]).state.should == HitoriSolver::Cell::WHITE
 
-        board.cell_yx(1,0).value.should == 4
-        board.cell_yx(1,0).state.should == HitoriSolver::Cell::WHITE
+        board.cell_yx([1,0]).value.should == 4
+        board.cell_yx([1,0]).state.should == HitoriSolver::Cell::WHITE
 
-        board.cell_yx(1,2).value.should == 3
-        board.cell_yx(1,2).state.should == HitoriSolver::Cell::UNKNOWN
+        board.cell_yx([1,2]).value.should == 3
+        board.cell_yx([1,2]).state.should == HitoriSolver::Cell::UNKNOWN
 
     end
 
