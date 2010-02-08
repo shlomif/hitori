@@ -94,6 +94,14 @@ module HitoriSolver
     DIR_X = 0
     DIR_Y = 1
 
+    module Dirs_Loop
+        def dirs_loop
+            for dir in [ DIR_X, DIR_Y ] do
+                yield dir
+            end
+        end
+    end
+
     class Board
         attr_reader :x_len
         attr_reader :y_len
@@ -329,6 +337,9 @@ module HitoriSolver
     end
 
     class Process
+
+        include Dirs_Loop
+
         attr_reader :moves, :performed_moves
         def initialize(board)
             @board = board
@@ -349,6 +360,7 @@ module HitoriSolver
 
         class Counter < Hash
             include Offset_Module
+            include Dirs_Loop
 
             def set_dir_val(dir, yx, val)
                 coords = (dir == DIR_X) ? yx : yx.reverse
@@ -366,7 +378,7 @@ module HitoriSolver
             end
 
             def set_val(yx, val)
-                for dir in [ DIR_X, DIR_Y ] do
+                dirs_loop do |dir|
                     set_dir_val(dir, yx, val)
                 end
             end
@@ -431,7 +443,7 @@ module HitoriSolver
         def analyze_sequences()
             counter = self.calc_sequences_counter()
 
-            for dir in [ DIR_X, DIR_Y ] do
+            dirs_loop do |dir|
                 counter[dir].each_index do |row_idx| 
                     row = counter[dir][row_idx]
                     row.each do |val, seqs|
@@ -521,7 +533,7 @@ module HitoriSolver
             val = @board.cell_yx(yx).value
             # Look for identical values in the same x/y
             # and mark them as black.
-            for dir in [ DIR_X, DIR_Y ] do
+            dirs_loop do |dir|
                 row = yx[dir]
                 for col in (0 .. @board.row_max(dir)) do
                     if col != yx[1-dir] then
