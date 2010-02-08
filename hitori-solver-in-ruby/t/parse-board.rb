@@ -234,3 +234,35 @@ describe "Intermediate Process for Board No. 1" do
     end
 
 end
+
+describe "single-digit-L-corner test" do
+
+
+    before (:each) do
+
+        contents = [
+            [[2,HitoriSolver::Cell::BLACK],[1,HitoriSolver::Cell::WHITE],3,2,4,],
+            [[4,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::WHITE],3,2,2,],
+            [[3,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::BLACK],[2,HitoriSolver::Cell::WHITE],5,1,],
+            [[1,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::WHITE],[3,HitoriSolver::Cell::BLACK],[3,HitoriSolver::Cell::WHITE],2,],
+            [[2,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::BLACK],[1,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::WHITE],3,],
+]
+
+        @board = HitoriSolver::Board.new(5, 5, contents)
+
+        @process = HitoriSolver::Process.new(@board)
+    end
+    
+    it "should process a single-digit L-shaped corner" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        #
+        board = @board
+        process = @process
+
+        process.analyze_single_value_L_shaped_corners()
+
+        process.moves.length.should == 1
+        process.moves[0].is_yx_col([1,3],"black")
+    end
+
+end

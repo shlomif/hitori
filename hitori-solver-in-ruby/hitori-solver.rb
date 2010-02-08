@@ -124,7 +124,7 @@ module HitoriSolver
         end
 
         def cell(dir, coords)
-            if dir == 0 then
+            if dir == DIR_X then
                 return cell_yx(coords[0], coords[1])
             else
                 return cell_yx(coords[1], coords[0])
@@ -136,6 +136,14 @@ module HitoriSolver
                 return maxx()
             else
                 return maxy()
+            end
+        end
+
+        def col_max(dir)
+            if (dir == DIR_X) then
+                return maxy()
+            else
+                return maxx()
             end
         end
 
@@ -428,6 +436,36 @@ module HitoriSolver
                     row.each do |val, seqs|
                         analyze_seqs_row(dir, row_idx, row, val, seqs)
                     end
+                end
+            end
+        end
+
+        def analyze_single_value_L_shaped_corners()
+
+            dir = DIR_X
+
+            v = lambda { |yx| return @board.cell(dir, yx).value };
+
+            analyze_coords = lambda { |coords, two, three|
+                val = v.call(coords)
+                if ((val == v.call(two)) && (val == v.call(three)))
+                    add_move(
+                        dir, coords[0], coords[1], "black",
+                        "Single-value L-shaped corner must be white-black-white"
+                    )        
+                end
+            }
+
+            row = @board.row_max(dir)
+            col = @board.col_max(dir)
+
+            for c in [[1,0],[col-1,col]] do
+                for r in [[1,0], [row-1,row]] do
+                    analyze_coords.call(
+                        [c[0],r[0]],
+                        [c[1],r[0]],
+                        [c[0],r[1]]
+                    )
                 end
             end
         end
