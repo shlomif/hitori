@@ -495,9 +495,8 @@ module HitoriSolver
             white_regions.each_region do |r|
                 unknowns = r.get_adjacent_unknowns()
                 if (unknowns.length == 1)
-                    coords = unknowns[0]
                     add_yx_move(
-                        coords,
+                        unknowns[0],
                         "white",
                         "Extending a white region to the only adjacent cell in an unknown state"
                    )
