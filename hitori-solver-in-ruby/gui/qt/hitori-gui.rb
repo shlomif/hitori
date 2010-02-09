@@ -32,7 +32,7 @@ class HitoriField < Qt::Widget
         board = @hitori.board
         for y in (0 .. board.maxy) do
             for x in (0 .. board.maxx) do
-                cell = board.cell_yx(y,x)
+                cell = board.cell_yx([y,x])
                 s = cell.state
                 val = cell.value
 
@@ -197,7 +197,7 @@ class MyHitoriGame
             for y in (0 .. b.maxy) do
                 out.print("    [");
                 for x in (0 .. b.maxx) do
-                     out.print(@board.cell_yx(y, x).as_string(), ",")
+                     out.print(@board.cell_yx([y, x]).as_string(), ",")
                 end
                 out.print("],\n");
             end
