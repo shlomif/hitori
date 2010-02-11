@@ -266,3 +266,34 @@ describe "single-digit-L-corner test" do
     end
 
 end
+
+describe "parse the board" do
+
+    before (:each) do
+
+        @contents = [
+            [[2,HitoriSolver::Cell::BLACK],[1,HitoriSolver::Cell::WHITE],3,2,4,],
+            [[4,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::WHITE],3,2,2,],
+            [[3,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::BLACK],[2,HitoriSolver::Cell::WHITE],5,1,],
+            [[1,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::WHITE],[3,HitoriSolver::Cell::BLACK],[3,HitoriSolver::Cell::WHITE],2,],
+            [[2,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::BLACK],[1,HitoriSolver::Cell::WHITE],[4,HitoriSolver::Cell::WHITE],3,],
+]
+
+    end
+    
+    it "should parse the string correctly" do
+
+        got_contents = HitoriSolver::Board.parse(<<"EOF")
+5*5
+[2B] [1W] [3]  [2U] [4]
+[4W] [5W] [3]  [2]  [2U]
+[3W] [4B] [2W] [5]  [1]
+[1W] [4W] [3B] [3W] [2]
+[2W] [5B] [1W] [4W] [3U]
+EOF
+
+        got_contents.should == @contents
+    end
+
+end
+

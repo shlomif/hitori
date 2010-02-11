@@ -11,6 +11,10 @@ module HitoriSolver
     end
     class CellShouldBeDifferentColor < UnsolvableException
     end
+    class ParseException < RuntimeError
+    end
+    class DimsParseException < ParseException
+    end
 
     module Offset_Module
         class OffsetsList
@@ -185,6 +189,43 @@ module HitoriSolver
                     yield yx
                 end
             end
+        end
+
+        def self.parse(board_string)
+            lines = board_string.split(/\n/)
+            next_line = 0
+            dims = lines[next_line]
+            next_line += 1
+            if dims =~ /^(\d+)\*(\d+)\s*\z/ then
+                height, width = $1.to_i, $2.to_i
+            else
+                raise DimsParseException, "Could not parse dimensions at line 1";
+            end
+
+            contents = []
+            for y in 1 .. height do
+                line = lines[next_line]
+                next_line += 1
+                out_line = []
+                for x in 0 .. (width-1) do
+                    if line.sub!(/^\[(\d+)(W|B|U|)\]\s*/, "")
+                        id, status = $1.to_i(), $2
+                        if (status == "U" or status == "")
+                            out_line << id
+                        else
+                            out_line << [id, 
+                                (status == "W" ? 
+                                 HitoriSolver::Cell::WHITE :
+                                 HitoriSolver::Cell::BLACK)]
+                        end
+                    else
+                        raise CellParseException, "Could not parse cell at line #{next_line}";
+                    end
+                end
+                contents << out_line
+            end
+
+            return contents
         end
 
     end
