@@ -8,6 +8,8 @@
 
 $VERBOSE = true; $:.unshift File.dirname($0)
 
+$board_filename = ARGV.shift
+
 require 'Qt'
 
 class HitoriField < Qt::Widget
@@ -176,7 +178,8 @@ end
 
 class MyHitoriGame
     attr_reader :board, :process
-    def initialize()
+
+    def get_board()
         contents = [
             [2,1,3,2,4],
             [4,5,3,2,2],
@@ -184,8 +187,17 @@ class MyHitoriGame
             [1,4,3,3,2],
             [2,5,1,4,3]
         ]
+        
+        if ($board_filename)
+            return HitoriSolver::Board.parse(File.read($board_filename))
+        else
+            return [5,5,contents]
+        end
+    end
 
-        @board = HitoriSolver::Board.new(5, 5, contents)
+    def initialize()
+
+        @board = HitoriSolver::Board.new(*get_board())
         @process = HitoriSolver::Process.new(@board)
     end
 
