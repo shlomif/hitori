@@ -298,3 +298,28 @@ EOF
 
 end
 
+describe "Process for Board No. 2" do
+
+    before (:each) do
+
+        params = HitoriSolver::Board.parse(
+            File.read("./boards/menneske.no-2.txt")
+        )
+
+        @board = HitoriSolver::Board.new(*params)
+
+        @process = HitoriSolver::Process.new(@board)
+    end
+
+    it "should not die upon analyze_sequences" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        #
+        board = @board
+        process = @process
+
+        process.analyze_sequences()
+
+        # Reached here successfully .
+        1.should == 1
+    end
+end

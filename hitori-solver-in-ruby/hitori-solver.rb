@@ -455,7 +455,7 @@ module HitoriSolver
 
             elsif (sorted_seqs[0].length() == 3) then
 
-                if (sorted_seqs[1].length() >= 2) then
+                if sorted_seqs.length > 1 and sorted_seqs[1].length() >= 2
                     raise TwoPairsException, \
                         "Found two pairs in #{dir} #{row}"
                 else
