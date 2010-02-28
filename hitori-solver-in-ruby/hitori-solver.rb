@@ -489,8 +489,7 @@ module HitoriSolver
             counter = self.calc_sequences_counter()
 
             dirs_loop do |dir|
-                counter[dir].each_index do |row_idx| 
-                    row = counter[dir][row_idx]
+                counter[dir].each_with_index do |row, row_idx| 
                     row.each do |val, seqs|
                         analyze_seqs_row(dir, row_idx, row, val, seqs)
                     end
