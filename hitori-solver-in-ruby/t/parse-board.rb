@@ -19,6 +19,7 @@ module HitoriSolver
         end
     end
 end
+
 describe "construct_board" do
     it "board No. 1 should" do
         # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
