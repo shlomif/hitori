@@ -323,3 +323,35 @@ describe "Process for Board No. 2" do
         1.should == 1
     end
 end
+
+describe "Process for En-Wikipedia Board" do
+
+    before (:each) do
+
+        contents = [
+            [4,8,1,6,3,2,5,7,],
+            [3,6,7,2,1,6,5,4,],
+            [2,3,4,8,2,8,6,1,],
+            [4,1,6,5,7,7,3,5,],
+            [7,2,3,1,8,5,1,2,],
+            [3,5,6,7,3,1,8,4,],
+            [6,4,2,3,5,4,[7,HitoriSolver::Cell::WHITE],[8,HitoriSolver::Cell::WHITE],],
+            [8,7,1,4,2,[3,HitoriSolver::Cell::WHITE],[5,HitoriSolver::Cell::BLACK],[6,HitoriSolver::Cell::WHITE],],
+        ]
+
+        @board = HitoriSolver::Board.new(8,8, contents)
+
+        @process = HitoriSolver::Process.new(@board)
+    end
+
+    it "should analyze XYX triads properly" do
+        # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
+        #
+        board = @board
+        process = @process
+
+        process.analyze_xyx_triads()
+        process.moves[0].is_yx_col([2,4],"white")
+
+    end
+end

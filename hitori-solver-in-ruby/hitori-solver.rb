@@ -497,6 +497,25 @@ module HitoriSolver
             end
         end
 
+        # This analyzes triads that look like 1-2-1 where if the 2 had been
+        # black then both 1's would have been white and so it must be white.
+        def analyze_xyx_triads()
+            b = @board
+            dirs_loop do |dir|
+                ( 0 .. b.row_max(dir) ).each do |y|
+                    ( 0 .. b.col_max(dir)-2 ).each do |x|
+                        val = lambda { |x1| return b.cell(dir,[y,x1]).value }
+                        if val.call(x) == val.call(x+2)
+                            add_move(
+                                dir, y, x+1, "white",
+                                "The Y in an XYX triad sequence should be white"
+                            )
+                        end
+                    end
+                end
+            end
+        end
+
         def analyze_single_value_L_shaped_corners()
 
             dir = DIR_X

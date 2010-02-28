@@ -100,6 +100,7 @@ class GameBoard < Qt::Widget
         ops_list.addItem("analyze_sequences")
         ops_list.addItem("expand_white_regions")
         ops_list.addItem("analyze_single_value_L_shaped_corners")
+        ops_list.addItem("analyze_xyx_triads")
         ops_list.addItem("apply_a_single_move")
 
         connect(ops_list, SIGNAL('itemClicked(QListWidgetItem *)'), \
