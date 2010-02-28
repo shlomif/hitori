@@ -292,7 +292,7 @@ describe "parse the board" do
 [2W] [5B] [1W] [4W] [3U]
 EOF
 
-        got_contents.should == @contents
+        got_contents.should == [5,5,@contents,]
     end
 
 end

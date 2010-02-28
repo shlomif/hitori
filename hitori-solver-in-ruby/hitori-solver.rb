@@ -225,7 +225,7 @@ module HitoriSolver
                 contents << out_line
             end
 
-            return contents
+            return [height, width, contents]
         end
 
     end
