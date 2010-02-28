@@ -117,6 +117,14 @@ class GameBoard < Qt::Widget
         hitoriLayout.addWidget(@hitoriField)
         hitoriBox.layout = hitoriLayout
 
+        bottomFrame = Qt::Frame.new
+        bottomFrame.layout = bottomLayout
+
+        mainSplitter = Qt::Splitter.new
+        mainSplitter.setOrientation(Qt::Vertical)
+        mainSplitter.addWidget(hitoriBox)
+        mainSplitter.addWidget(bottomFrame)
+
         buttonLayout = Qt::HBoxLayout.new
         buttonLayout.addWidget(quit)
         buttonLayout.addWidget(dump_button)
@@ -124,8 +132,7 @@ class GameBoard < Qt::Widget
         gridLayout = Qt::GridLayout.new
         gridLayout.addLayout( buttonLayout, 0, 0 )
         gridLayout.addLayout(topLayout, 0, 1)
-        gridLayout.addWidget( hitoriBox, 1, 0, 1, 2 )
-        gridLayout.addLayout(bottomLayout, 2, 0, 1, 2)
+        gridLayout.addWidget( mainSplitter, 1, 0, 1, 2 )
         gridLayout.setColumnStretch( 1, 10 )
         gridLayout.setRowMinimumHeight( 1, 200 )
 		setLayout(gridLayout)
