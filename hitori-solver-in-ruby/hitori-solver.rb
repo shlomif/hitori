@@ -280,7 +280,7 @@ module HitoriSolver
 
             include Offset_Module
 
-            attr_reader :whites, :adjacent_blacks
+            attr_reader :whites, :adjacent_blacks, :regions
             def initialize()
                 @whites = {}
                 @adjacent_blacks = {}
@@ -396,10 +396,6 @@ module HitoriSolver
             _optimize_regions()
         end
 
-        def each_region
-            @regions.each { |r| yield r }
-        end
-       
     end
 
     class Process
@@ -573,7 +569,7 @@ module HitoriSolver
 
             white_regions.calc_regions()
 
-            white_regions.each_region do |r|
+            white_regions.regions.each do |r|
                 unknowns = r.get_adjacent_unknowns()
                 if (unknowns.length == 1)
                     add_yx_move(
