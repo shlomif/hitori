@@ -291,10 +291,8 @@ module HitoriSolver
                 @whites[yx] = true
             end
 
-            def loop_over_whites
-                @whites.each_key do |yx|
-                    yield yx
-                end
+            def white_coords
+                return @whites.keys
             end
 
             def merge!(other_region)
@@ -362,7 +360,7 @@ module HitoriSolver
                 if (r_min == r_max) then
                     add_to_region.call(r_min)
                 else
-                    @regions[r_max].loop_over_whites do |yx_temp|
+                    @regions[r_max].white_coords.each do |yx_temp|
                         @cells_map[yx_temp] = r_min
                     end
                     @regions[r_min].merge!(@regions[r_max])
@@ -383,7 +381,7 @@ module HitoriSolver
             new_regions = @regions.find_all { |r| r.class == Region }
 
             new_regions.each_with_index do |members,i| 
-                members.loop_over_whites { |yx| @cells_map[yx] = i }
+                members.white_coords.each { |yx| @cells_map[yx] = i }
             end
 
             new_regions.each { |r| r._calc_adjacent(@board) }
