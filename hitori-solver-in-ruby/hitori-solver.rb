@@ -221,12 +221,8 @@ module HitoriSolver
             return Coords_Loop.new(maxy(), maxx())
         end
 
-        def loop_over_whites
-            all_coords.each do |yx|
-                if cell_yx(yx).is_white() then
-                    yield yx
-                end
-            end
+        def all_whites
+            return all_coords.select { |yx| cell_yx(yx).is_white() }
         end
 
         def self.parse(board_string)
@@ -385,7 +381,7 @@ module HitoriSolver
         end
 
         def _find_regions()
-            @board.loop_over_whites do |yx|
+            @board.all_whites.each do |yx|
                 _find_regions_for_coords(yx)
             end
         end
