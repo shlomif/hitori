@@ -129,13 +129,7 @@ module HitoriSolver
     DIR_X = 0
     DIR_Y = 1
 
-    module Dirs_Loop
-        def dirs_loop
-            for dir in [ DIR_X, DIR_Y ] do
-                yield dir
-            end
-        end
-    end
+    DIRS = [DIR_X, DIR_Y]
 
     class Board
         attr_reader :x_len
@@ -410,8 +404,6 @@ module HitoriSolver
 
     class Process
 
-        include Dirs_Loop
-
         attr_reader :moves, :performed_moves
         def initialize(board)
             @board = board
@@ -436,7 +428,6 @@ module HitoriSolver
 
         class Counter < Hash
             include Offset_Module
-            include Dirs_Loop
 
             def set_dir_val(dir, yx, val)
                 coords = (dir == DIR_X) ? yx : yx.reverse
@@ -454,7 +445,7 @@ module HitoriSolver
             end
 
             def set_val(yx, val)
-                dirs_loop do |dir|
+                DIRS.each do |dir|
                     set_dir_val(dir, yx, val)
                 end
             end
@@ -519,7 +510,7 @@ module HitoriSolver
         def analyze_sequences()
             counter = self.calc_sequences_counter()
 
-            dirs_loop do |dir|
+            DIRS.each do |dir|
                 counter[dir].each_with_index do |row, row_idx| 
                     row.each do |val, seqs|
                         analyze_seqs_row(dir, row_idx, row, val, seqs)
@@ -532,7 +523,7 @@ module HitoriSolver
         # black then both 1's would have been white and so it must be white.
         def analyze_xyx_triads()
             b = @board
-            dirs_loop do |dir|
+            DIRS.each do |dir|
                 ( 0 .. b.row_max(dir) ).each do |y|
                     ( 0 .. b.col_max(dir)-2 ).each do |x|
                         val = lambda { |x1| return b.cell(dir,[y,x1]).value }
@@ -627,7 +618,7 @@ module HitoriSolver
             val = @board.cell_yx(yx).value
             # Look for identical values in the same x/y
             # and mark them as black.
-            dirs_loop do |dir|
+            DIRS.each do |dir|
                 row = yx[dir]
                 for col in (0 .. @board.row_max(dir)) do
                     if col != yx[1-dir] then
