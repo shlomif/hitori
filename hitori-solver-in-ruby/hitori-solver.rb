@@ -47,26 +47,6 @@ module HitoriSolver
     class DimsParseException < ParseException
     end
 
-    module Offset_Module
-        class OffsetsList
-            def initialize(offsets)
-                @offsets = offsets
-            end
-
-            def loop(init_yx, board)
-                for offset_yx in @offsets do
-                    new_yx = [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
-                    if board.in_bounds(*new_yx) then
-                        yield new_yx
-                    end
-                end
-            end
-        end
-        
-        Prev_Offsets = OffsetsList.new([[-1,0],[0,-1]])
-        Offsets = OffsetsList.new([[-1,0],[0,-1],[0,1],[1,0]])        
-    end
-
     class Cell
         UNKNOWN = 0
         WHITE = 1
@@ -262,6 +242,20 @@ module HitoriSolver
             return [height, width, contents]
         end
 
+        def _get_offsets(with_next)
+            if with_next
+                return [[-1,0],[0,-1],[0,1],[1,0]]
+            else
+                return [[-1,0],[0,-1]]
+            end
+        end
+
+        def neighbors(init_yx, with_next = true)
+            _get_offsets(with_next).map { |offset_yx| 
+                [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
+            }.select { |new_yx| in_bounds(*new_yx) }
+        end
+
     end
 
     class Move
@@ -286,8 +280,6 @@ module HitoriSolver
         end
 
         class Region
-
-            include Offset_Module
 
             attr_reader :whites, :adjacent_blacks, :regions
             def initialize()
@@ -314,7 +306,7 @@ module HitoriSolver
                     # TODO : Write better. The loop with assignment 
                     # is ugly.
                     is_adj = false
-                    Offsets.loop(yx, board) do |adj_yx|
+                    board.neighbors(yx).each do |adj_yx|
                         if (whites.has_key?(adj_yx)) then
                             is_adj = true
                         end
@@ -337,7 +329,7 @@ module HitoriSolver
 
         def _find_adjacent_regions(yx)
             found_regions = []
-            Offset_Module::Prev_Offsets.loop(yx, @board) do |new_yx|
+            @board.neighbors(yx, false).each do |new_yx|
                 if ! @board.cell_yx(new_yx).is_white() then
                     next
                 end
@@ -430,8 +422,6 @@ module HitoriSolver
         end
 
         class Counter < Hash
-            include Offset_Module
-
             def set_dir_val(dir, yx, val)
                 coords = (dir == DIR_X) ? yx : yx.reverse
                 row = coords[0]
@@ -603,7 +593,7 @@ module HitoriSolver
             if !@board.cell_yx(yx).mark_as_black() then
                 return false
             end
-            Offset_Module::Offsets.loop(yx, @board) do |new_yx|
+            @board.neighbors(yx).each do |new_yx|
                 add_yx_move(
                     new_yx,
                     "white",
