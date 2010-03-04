@@ -200,16 +200,29 @@ module HitoriSolver
             return @y_len-1
         end
 
-        def coords_loop
-            for y in (0 .. maxy()) do
-                for x in (0 .. maxx()) do
-                    yield [y,x]
+        class Coords_Loop
+            include Enumerable
+
+            def initialize(maxy, maxx) 
+                @maxy = maxy
+                @maxx = maxx
+            end
+
+            def each
+                ( 0 .. @maxy ).each do |y|
+                    ( 0 .. @maxx ).each do |x|
+                        yield [y,x]
+                    end
                 end
             end
         end
 
+        def all_coords
+            return Coords_Loop.new(maxy(), maxx())
+        end
+
         def loop_over_whites
-            coords_loop do |yx|
+            all_coords.each do |yx|
                 if cell_yx(yx).is_white() then
                     yield yx
                 end
@@ -301,7 +314,7 @@ module HitoriSolver
             end
 
             def _calc_adjacent(board)
-                board.coords_loop do |yx|
+                board.all_coords.each do |yx|
                     # TODO : Write better. The loop with assignment 
                     # is ugly.
                     is_adj = false
@@ -451,7 +464,7 @@ module HitoriSolver
             counter[DIR_X] = (0 .. @board.maxx).map { |x| Hash.new }
             counter[DIR_Y] = (0 .. @board.maxy).map { |y| Hash.new }
 
-            @board.coords_loop do |yx|
+            @board.all_coords.each do |yx|
                 val = @board.cell(0, yx).value
 
                 counter.set_val(yx, val)
