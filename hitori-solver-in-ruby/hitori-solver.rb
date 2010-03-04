@@ -55,14 +55,8 @@ module HitoriSolver
         attr_reader :state
         attr_reader :value
 
-        def initialize(val)
-            @state = UNKNOWN
-            if (val.class == Array) then
-                @value = val[0]
-                @state = val[1]
-            else
-                @value = val
-            end
+        def initialize(value, state = UNKNOWN)
+            @value, @state = value, state
         end
 
         # If the existing state is unknown, marks the cell as the new color
@@ -122,7 +116,7 @@ module HitoriSolver
             for s_row in contents do
                 d_row = []
                 for v in s_row do
-                    d_row << Cell.new(v)
+                    d_row << Cell.new(*v)
                 end
                 if (d_row.length() != @x_len)
                     raise WrongRowLenException, \
