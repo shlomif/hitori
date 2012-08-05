@@ -1,5 +1,5 @@
 # Copyright (c) 2010 Shlomi Fish
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -8,10 +8,10 @@
 # copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following
 # conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -20,13 +20,13 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-# 
+#
 # ----------------------------------------------------------------------------
-# 
+#
 # This is the MIT/X11 Licence. For more information see:
-# 
+#
 # 1. http://www.opensource.org/licenses/mit-license.php
-# 
+#
 # 2. http://en.wikipedia.org/wiki/MIT_License
 
 require "hitori-solver.rb"
@@ -67,19 +67,19 @@ describe "construct_board" do
         board.cell_yx([0,2]).value.should == 3
         board.cell_yx([4,2]).value.should == 1
         board.cell(0, [0,1]).value.should == 1
-        board.cell(1, [0,1]).value.should == 4        
+        board.cell(1, [0,1]).value.should == 4
     end
     it "should throw an exception for invalid x_len" do
         board = 0
         lambda {
-            board = HitoriSolver::Board.new(2, 4, [[3,2,1],[4,5,6,7]])   
+            board = HitoriSolver::Board.new(2, 4, [[3,2,1],[4,5,6,7]])
         }.should raise_error(HitoriSolver::WrongRowLenException)
     end
 
     it "should throw an exception for invalid height" do
         board = 0
         lambda {
-            board = HitoriSolver::Board.new(2, 4, [[3,2,1,4],[4,5,6,7], [1,1,2,1]])   
+            board = HitoriSolver::Board.new(2, 4, [[3,2,1,4],[4,5,6,7], [1,1,2,1]])
         }.should raise_error(HitoriSolver::WrongHeightException)
     end
 end
@@ -148,7 +148,7 @@ describe "Process for Board No. 1" do
         next_move = 0
 
         get_move_key = lambda { |m| return [m.y,m.x].join(",") }
-        
+
         while process.moves.length() > 0 do
             while next_move < process.performed_moves.length()
                 key = get_move_key.call(process.performed_moves[next_move])
@@ -185,7 +185,7 @@ describe "Intermediate Process for Board No. 1" do
         process = @process
 
         board.cell_yx([0,0]).value.should == 2
-        board.cell_yx([0,0]).state.should == HitoriSolver::Cell::BLACK 
+        board.cell_yx([0,0]).state.should == HitoriSolver::Cell::BLACK
 
         board.cell_yx([0,1]).value.should == 1
         board.cell_yx([0,1]).state.should == HitoriSolver::Cell::WHITE
@@ -202,11 +202,11 @@ describe "Intermediate Process for Board No. 1" do
         regions_manager = HitoriSolver::WhiteRegions.new(@board)
         regions_manager.calc_regions()
 
-        regions_manager.regions[0].whites.should == { 
+        regions_manager.regions[0].whites.should == {
             [0,1] => true, [1,0] => true, [1,1] => true, [2,0] => true,
         };
 
-        regions_manager.regions[0].adjacent_blacks.should == { 
+        regions_manager.regions[0].adjacent_blacks.should == {
             [0,0] => true, [2,1] => true
         };
 
@@ -284,7 +284,7 @@ describe "single-digit-L-corner test" do
 
         @process = HitoriSolver::Process.new(@board)
     end
-    
+
     it "should process a single-digit L-shaped corner" do
         # http://www.menneske.no/hitori/5x5/eng/showpuzzle.html?number=1
         #
@@ -312,7 +312,7 @@ describe "parse the board" do
 ]
 
     end
-    
+
     it "should parse the string correctly" do
 
         got_contents = HitoriSolver::Board.parse(<<"EOF")
