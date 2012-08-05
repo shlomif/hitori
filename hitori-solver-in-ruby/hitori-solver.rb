@@ -1,5 +1,5 @@
 # Copyright (c) 2010 Shlomi Fish
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -8,10 +8,10 @@
 # copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following
 # conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -20,13 +20,13 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-# 
+#
 # ----------------------------------------------------------------------------
-# 
+#
 # This is the MIT/X11 Licence. For more information see:
-# 
+#
 # 1. http://www.opensource.org/licenses/mit-license.php
-# 
+#
 # 2. http://en.wikipedia.org/wiki/MIT_License
 
 module HitoriSolver
@@ -93,11 +93,11 @@ module HitoriSolver
         def is_black()
             return @state == BLACK
         end
- 
+
         def is_unknown()
             return @state == UNKNOWN
         end
-        
+
     end
 
     DIR_X = 0
@@ -109,7 +109,7 @@ module HitoriSolver
         attr_reader :x_len
         attr_reader :y_len
 
-        def initialize(height, width, contents) 
+        def initialize(height, width, contents)
             @x_len = width
             @y_len = height
             board = []
@@ -177,7 +177,7 @@ module HitoriSolver
         class Coords_Loop
             include Enumerable
 
-            def initialize(maxy, maxx) 
+            def initialize(maxy, maxx)
                 @maxy = maxy
                 @maxx = maxx
             end
@@ -221,8 +221,8 @@ module HitoriSolver
                         if (status == "U" or status == "")
                             out_line << id
                         else
-                            out_line << [id, 
-                                (status == "W" ? 
+                            out_line << [id,
+                                (status == "W" ?
                                  HitoriSolver::Cell::WHITE :
                                  HitoriSolver::Cell::BLACK)]
                         end
@@ -245,7 +245,7 @@ module HitoriSolver
         end
 
         def neighbors(init_yx, with_next = true)
-            _get_offsets(with_next).map { |offset_yx| 
+            _get_offsets(with_next).map { |offset_yx|
                 [init_yx[0]+offset_yx[0], init_yx[1]+offset_yx[1]]
             }.select { |new_yx| in_bounds(*new_yx) }
         end
@@ -263,7 +263,7 @@ module HitoriSolver
     end
 
     class WhiteRegions
- 
+
 
         attr_reader :regions, :cells_map
 
@@ -297,7 +297,7 @@ module HitoriSolver
 
             def _calc_adjacent(board)
                 board.all_coords.each do |yx|
-                    # TODO : Write better. The loop with assignment 
+                    # TODO : Write better. The loop with assignment
                     # is ugly.
                     is_adj = false
                     board.neighbors(yx).each do |adj_yx|
@@ -375,7 +375,7 @@ module HitoriSolver
         def _optimize_regions()
             new_regions = @regions.find_all { |r| r.class == Region }
 
-            new_regions.each_with_index do |members,i| 
+            new_regions.each_with_index do |members,i|
                 members.white_coords.each { |yx| @cells_map[yx] = i }
             end
 
@@ -421,7 +421,7 @@ module HitoriSolver
                 row = coords[0]
                 col = coords[1]
                 myseqs = self[dir][row][val] ||= []
-                    
+
                 if (myseqs.length == 0) then
                     myseqs << [col]
                 elsif (myseqs[-1][-1]+1 == col) then
@@ -498,7 +498,7 @@ module HitoriSolver
             counter = self.calc_sequences_counter()
 
             DIRS.each do |dir|
-                counter[dir].each_with_index do |row, row_idx| 
+                counter[dir].each_with_index do |row, row_idx|
                     row.each do |val, seqs|
                         analyze_seqs_row(dir, row_idx, row, val, seqs)
                     end
@@ -537,7 +537,7 @@ module HitoriSolver
                     add_move(
                         dir, coords[0], coords[1], "black",
                         "Single-value L-shaped corner must be white-black-white"
-                    )        
+                    )
                 end
             }
 
@@ -613,7 +613,7 @@ module HitoriSolver
                             add_move(
                                 dir, row, col,
                                 "black",
-                                ("A square in the same row/column as a " + 
+                                ("A square in the same row/column as a " +
                                 "white square and with an identical value " +
                                 "becomes black")
                             )
