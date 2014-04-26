@@ -29,7 +29,7 @@
 #
 # 2. http://en.wikipedia.org/wiki/MIT_License
 
-require "hitori-solver.rb"
+require "hitori_solver.rb"
 
 class Object
     def ok()
