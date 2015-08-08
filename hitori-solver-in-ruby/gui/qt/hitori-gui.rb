@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Copyright (c) 2010 Shlomi Fish
-# 
+#
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without
@@ -10,10 +10,10 @@
 # copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following
 # conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -22,13 +22,13 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
-# 
+#
 # ----------------------------------------------------------------------------
-# 
+#
 # This is the MIT/X11 Licence. For more information see:
-# 
+#
 # 1. http://www.opensource.org/licenses/mit-license.php
-# 
+#
 # 2. http://en.wikipedia.org/wiki/MIT_License
 
 # This code is adapted from ruby/qtruby/examples/tutorial/t14/ in the qtruby
@@ -78,12 +78,12 @@ class HitoriField < Qt::Widget
 
                 square_rect = Qt::Rect.new(
                     x*Cell_Width,
-                    y*Cell_Height, 
-                    Cell_Width, 
-                    Cell_Height 
+                    y*Cell_Height,
+                    Cell_Width,
+                    Cell_Height
                 )
-                
-                painter.drawRect(square_rect) 
+
+                painter.drawRect(square_rect)
 
                 painter.pen = \
                     (s == HitoriSolver::Cell::BLACK) \
@@ -93,7 +93,7 @@ class HitoriField < Qt::Widget
                 painter.drawText(square_rect, Qt::AlignCenter, val.to_s())
             end
         end
-        
+
         painter.end
     end
 end
@@ -108,13 +108,13 @@ class GameBoard < Qt::Widget
         super()
         quit = Qt::PushButton.new('&Quit')
         quit.font = Qt::Font.new('Times', 18, Qt::Font::Bold)
-    
+
         connect(quit, SIGNAL('clicked()'), $qApp, SLOT('quit()'))
 
         dump_button = Qt::PushButton.new('&Dump state')
         dump_button.font = Qt::Font.new('Times', 18, Qt::Font::Bold)
         connect(dump_button, SIGNAL('clicked()'), self, SLOT('dump_board()'))
-    
+
         hitoriBox = Qt::Frame.new
         hitoriBox.frameStyle = Qt::Frame::WinPanel | Qt::Frame::Sunken
 
@@ -123,7 +123,7 @@ class GameBoard < Qt::Widget
         @hitoriField = HitoriField.new(self, hitori)
 
         Qt::Shortcut.new(Qt::KeySequence.new(Qt::CTRL + Qt::Key_Q), self, SLOT('close()'))
-                                     
+
         topLayout = Qt::HBoxLayout.new
         topLayout.addStretch(1)
 
@@ -168,13 +168,13 @@ class GameBoard < Qt::Widget
         gridLayout.setColumnStretch( 1, 10 )
         gridLayout.setRowMinimumHeight( 1, 200 )
 		setLayout(gridLayout)
-    
+
     end
 
     def dump_board()
         @hitori.dump_state_to_file("dump.rb");
     end
-    
+
     def perform_op(item)
         method = item.text()
         @hitori.process.send(method)
@@ -226,7 +226,7 @@ class MyHitoriGame
             [1,4,3,3,2],
             [2,5,1,4,3]
         ]
-        
+
         if ($board_filename)
             return HitoriSolver::Board.parse(File.read($board_filename))
         else

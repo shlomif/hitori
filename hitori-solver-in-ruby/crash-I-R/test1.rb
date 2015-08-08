@@ -16,7 +16,7 @@ process.analyze_sequences()
 
 while 1 do
     process.apply_a_single_move()
-    (0..4).each { |y| 
+    (0..4).each { |y|
         (0..4).each { |x| print "[#{board.cell_yx(y,x).state}]" }
         print "\n"
     }
